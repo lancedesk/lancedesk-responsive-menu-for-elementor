@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,14 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 
 == Changelog ==
 
+= 1.0.9 =
+* Reorganize off-canvas styling under Style > Off Canvas and migrate the close icon to the Elementor Icons library (with legacy fallback).
+* Align Style > Submenus controls with off-canvas nested menus: toggle icon, spacing, colors, accordion, and animation.
+* Fix off-canvas submenu chevrons not appearing (menu sanitization was stripping icon markup).
+* Fix off-canvas submenu toggles not expanding (standard menu click handler no longer blocks off-canvas).
+* Fix hamburger button staying visible over the open off-canvas panel.
+* Add close icon weight and stroke width styling controls; use a lighter default close character.
+
 = 1.0.8 =
 * Add optional off-canvas dark-mode logo with selectable trigger source: accessibility class, system preference, or auto.
 * Add responsive off-canvas logo controls for width, max width, height, padding, and margin.
@@ -113,6 +121,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.9 =
+Recommended update for off-canvas submenu toggles, Style > Off Canvas reorganization, and close icon styling controls.
 
 = 1.0.8 =
 Recommended update for dual light/dark off-canvas logos and responsive logo/hamburger spacing controls.

@@ -2,7 +2,7 @@
 
 Responsive Elementor menu widget for WordPress with per-device layout controls, flexible submenu triggers, and cleaner mobile navigation behavior.
 
-![Version](https://img.shields.io/badge/version-1.0.8-blue)
+![Version](https://img.shields.io/badge/version-1.0.9-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-green)
 ![WordPress](https://img.shields.io/badge/wordpress-5.0%2B-blue)
 ![PHP](https://img.shields.io/badge/php-7.4%2B-blue)
@@ -52,6 +52,15 @@ Clear, consistent navigation improves user experience and can support better eng
 4. Pick a WordPress menu and configure responsive layout behavior.
 
 ## Changelog
+
+### 1.0.9
+
+- Reorganize off-canvas styling under **Style > Off Canvas** and migrate the close icon to the Elementor Icons library (with legacy fallback)
+- Align **Style > Submenus** controls with off-canvas nested menus (toggle icon, spacing, colors, accordion, animation)
+- Fix off-canvas submenu chevrons not appearing (menu sanitization was stripping icon markup)
+- Fix off-canvas submenu toggles not expanding (standard menu click handler no longer blocks off-canvas)
+- Fix hamburger button staying visible over the open off-canvas panel
+- Add close icon weight and stroke width styling controls; lighter default close character
 
 ### 1.0.8
 

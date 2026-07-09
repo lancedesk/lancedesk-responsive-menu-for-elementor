@@ -218,10 +218,33 @@ html.hb-a11y-dark .ldjem-offcanvas-logo-dual.ldjem-logo-dark-mode-accessibility 
 }
 
 .ldjem-offcanvas-close::before {
-  content: '✕';
+  content: '\00D7';
   color: inherit;
   font-size: inherit;
+  font-weight: 400;
   line-height: 1;
+}
+
+.ldjem-offcanvas-close.has-custom-icon::before {
+  content: none;
+  display: none;
+}
+
+.ldjem-offcanvas-close.has-custom-icon i,
+.ldjem-offcanvas-close.has-custom-icon svg {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  color: inherit;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.ldjem-offcanvas-close.has-custom-icon svg,
+.ldjem-offcanvas-close.has-custom-icon svg * {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 /* Alternative close icon styles */
@@ -297,6 +320,90 @@ html.hb-a11y-dark .ldjem-offcanvas-logo-dual.ldjem-logo-dark-mode-accessibility 
 .ldjem-offcanvas-menu-item.is-current > a {
   border-left: 4px solid #4A90E2;
   padding-left: 16px;
+}
+
+/* Parent items with submenu toggle */
+.ldjem-offcanvas-menu-item.has-children,
+.ldjem-offcanvas-submenu-item.has-children {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ldjem-offcanvas-menu-item.has-children > a,
+.ldjem-offcanvas-submenu-item.has-children > a {
+  order: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle,
+.ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle {
+  order: 2;
+  flex: 0 0 auto;
+  align-self: center;
+  margin-right: 12px;
+  margin-left: var(--ldjem-submenu-toggle-spacing, 0);
+  min-width: 32px;
+  min-height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  padding: 8px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback,
+.ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback {
+  display: inline-block;
+  line-height: 1;
+  font-size: inherit;
+}
+
+.ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle:empty::after,
+.ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle:empty::after {
+  content: '\25BE';
+  display: inline-block;
+  line-height: 1;
+  font-size: 0.85em;
+}
+
+.ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle i,
+.ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle svg,
+.ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle i,
+.ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle svg {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  transition: transform 0.3s ease;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.ldjem-offcanvas-menu-item.is-expanded > .ldjem-submenu-toggle i,
+.ldjem-offcanvas-menu-item.is-expanded > .ldjem-submenu-toggle svg,
+.ldjem-offcanvas-submenu-item.is-expanded > .ldjem-submenu-toggle i,
+.ldjem-offcanvas-submenu-item.is-expanded > .ldjem-submenu-toggle svg,
+.ldjem-offcanvas-menu-item.is-expanded > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback,
+.ldjem-offcanvas-submenu-item.is-expanded > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback {
+  transform: rotate(180deg);
+}
+
+.ldjem-offcanvas-menu-item.has-children > .ldjem-offcanvas-submenu,
+.ldjem-offcanvas-submenu-item.has-children > .ldjem-offcanvas-submenu {
+  order: 3;
+  flex: 0 0 100%;
+  width: 100%;
+  border-left-width: var(--ldjem-vertical-submenu-border-width, 0);
+  border-left-style: var(--ldjem-vertical-submenu-border-style, none);
+  border-left-color: var(--ldjem-vertical-submenu-border-color, transparent);
 }
 
 /* Submenu Container */
@@ -443,18 +550,11 @@ body.ldjem-offcanvas-open {
   .ldjem-offcanvas-wrapper,
   .ldjem-offcanvas-menu-item > a,
   .ldjem-offcanvas-submenu,
-  .ldjem-offcanvas-menu-item > a::after,
+  .ldjem-offcanvas-menu-item > .ldjem-submenu-toggle,
+  .ldjem-offcanvas-submenu-item > .ldjem-submenu-toggle,
   .ldjem-offcanvas-social-link {
     transition: none !important;
     animation: none !important;
-  }
-
-  .ldjem-offcanvas-menu-item.has-children > a::after {
-    transform: none;
-  }
-
-  .ldjem-offcanvas-menu-item.has-children.is-expanded > a::after {
-    transform: none;
   }
 }
 
@@ -641,7 +741,7 @@ body.ldjem-offcanvas-open {
   display: none !important;
 }
 
-.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device .ldjem-hamburger {
+.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device:not(.ldjem-offcanvas-is-open) .ldjem-hamburger {
   display: flex !important;
 }
 
@@ -658,11 +758,11 @@ body.ldjem-offcanvas-open {
   display: none !important;
 }
 
-/* Mobile preview hard-override: when off-canvas is enabled for mobile, never hide hamburger */
+/* Mobile preview hard-override: keep hamburger visible when off-canvas is enabled but closed */
 @media (max-width: 767px) {
-  .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device[data-offcanvas-mobile="yes"] .ldjem-hamburger,
-  html.elementor-device-mobile .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="yes"] .ldjem-hamburger,
-  body.elementor-device-mobile .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="yes"] .ldjem-hamburger {
+  .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger,
+  html.elementor-device-mobile .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger,
+  body.elementor-device-mobile .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -683,6 +783,27 @@ body.ldjem-offcanvas-open {
   padding: 8px;
   z-index: 1001;
   position: relative;
+}
+
+/* Hide toggle when panel is open; close button inside panel handles dismissal */
+.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open .ldjem-hamburger,
+body.ldjem-offcanvas-open .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open .ldjem-hamburger,
+body.ldjem-offcanvas-open .ldjem-menu-wrapper-offcanvas[data-ldjem-editor-preview-open="yes"] .ldjem-hamburger {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open.ldjem-offcanvas-enabled-device[data-offcanvas-mobile="yes"] .ldjem-hamburger,
+  html.elementor-device-mobile .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open[data-offcanvas-mobile="yes"] .ldjem-hamburger,
+  body.elementor-device-mobile .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open[data-offcanvas-mobile="yes"] .ldjem-hamburger {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
 }
 
 .ldjem-menu-wrapper-offcanvas .ldjem-hamburger .ldjem-hamburger-fallback-bar {
@@ -753,12 +874,12 @@ body.elementor-editor-active .ldjem-menu-wrapper-offcanvas[data-ldjem-editor-pre
 }
 
 /* Elementor device preview support */
-body.elementor-device-mobile .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="yes"] .ldjem-hamburger,
-html.elementor-device-mobile .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="yes"] .ldjem-hamburger,
-body.elementor-device-tablet .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="yes"] .ldjem-hamburger,
-html.elementor-device-tablet .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="yes"] .ldjem-hamburger,
-body.elementor-device-desktop .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="yes"] .ldjem-hamburger,
-html.elementor-device-desktop .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="yes"] .ldjem-hamburger {
+body.elementor-device-mobile .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger,
+html.elementor-device-mobile .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger,
+body.elementor-device-tablet .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-tablet="yes"] .ldjem-hamburger,
+html.elementor-device-tablet .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-tablet="yes"] .ldjem-hamburger,
+body.elementor-device-desktop .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-desktop="yes"] .ldjem-hamburger,
+html.elementor-device-desktop .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-desktop="yes"] .ldjem-hamburger {
   display: flex !important;
 }
 

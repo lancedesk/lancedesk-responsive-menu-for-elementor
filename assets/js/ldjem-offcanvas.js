@@ -162,7 +162,11 @@
       $localHamburger.css('display', '');
       $fallbackMenu.css('display', '');
       if (enabled) {
-        $localHamburger.css('display', 'flex');
+        if (state.isOpen) {
+          $localHamburger.css('display', 'none');
+        } else {
+          $localHamburger.css('display', 'flex');
+        }
         $fallbackMenu.css('display', 'none');
       } else {
         $localHamburger.css('display', 'none');
@@ -261,7 +265,7 @@
       $offcanvas.addClass('is-open');
       $offcanvas.attr('aria-hidden', 'false');
       $hamburger.attr('aria-expanded', 'true');
-      $wrapper.addClass('ldjem-editor-preview-open').attr('data-ldjem-editor-preview-open', 'yes');
+      $wrapper.addClass('ldjem-offcanvas-is-open ldjem-editor-preview-open').attr('data-ldjem-editor-preview-open', 'yes');
       emitDebug('open-applied', {
         offcanvasHasOpenClass: $offcanvas.hasClass('is-open') ? 'yes' : 'no',
         offcanvasAriaHidden: $offcanvas.attr('aria-hidden') || '',
@@ -307,7 +311,7 @@
       $offcanvas.removeClass('is-open');
       $offcanvas.attr('aria-hidden', 'true');
       $hamburger.attr('aria-expanded', 'false');
-      $wrapper.removeClass('ldjem-editor-preview-open').attr('data-ldjem-editor-preview-open', 'no');
+      $wrapper.removeClass('ldjem-offcanvas-is-open ldjem-editor-preview-open').attr('data-ldjem-editor-preview-open', 'no');
       emitDebug('close-applied', {
         offcanvasHasOpenClass: $offcanvas.hasClass('is-open') ? 'yes' : 'no',
         offcanvasAriaHidden: $offcanvas.attr('aria-hidden') || '',
@@ -400,44 +404,58 @@
     });
 
     // Event: Menu item click (close on navigation)
-    $offcanvas.on('click.ldjem', '.ldjem-offcanvas-menu-item:not(.has-children) > a', function () {
+    $offcanvas.on('click.ldjem', '.ldjem-offcanvas-menu-item:not(.has-children) > a, .ldjem-offcanvas-submenu-item:not(.has-children) > a', function () {
       closeMenu();
     });
 
-    // Event: Submenu toggle - use parent link for items with children
-    $offcanvas.on('click.ldjem', '.ldjem-offcanvas-menu-item.has-children > a, .ldjem-offcanvas-submenu-item.has-children > a', function (e) {
-      e.preventDefault();
-      const $toggleLink = $(this);
-      const $parent = $toggleLink.closest('li');
+    function toggleOffcanvasSubmenu($parent, $toggleBtn) {
+      const isAccordion = ($wrapper.attr('data-submenu-accordion') || 'yes') === 'yes';
       const isCurrentlyExpanded = $parent.hasClass('is-expanded');
+      const $submenu = $parent.children('.ldjem-offcanvas-submenu');
 
-      // Calculate max-height for smooth animation
-      const $submenu = $parent.find('> .ldjem-offcanvas-submenu');
-      if ($submenu.length) {
-        const submenuHeight = $submenu[0].scrollHeight;
-        
-        if (!isCurrentlyExpanded) {
-          // Expanding: set max-height to submenu height
-          $submenu.css('max-height', submenuHeight + 'px');
-        }
+      if (isAccordion && !isCurrentlyExpanded) {
+        $parent.siblings('.is-expanded').each(function () {
+          const $sibling = $(this);
+          $sibling.removeClass('is-expanded');
+          $sibling.children('.ldjem-submenu-toggle').attr('aria-expanded', 'false');
+          $sibling.children('.ldjem-offcanvas-submenu').css('max-height', '');
+        });
       }
 
       $parent.toggleClass('is-expanded');
-      $toggleLink.attr('aria-expanded', $parent.hasClass('is-expanded') ? 'true' : 'false');
+      const isExpanded = $parent.hasClass('is-expanded');
+      $toggleBtn.attr('aria-expanded', isExpanded ? 'true' : 'false');
 
-      // Trigger custom event for animations
+      if ($submenu.length) {
+        if (isExpanded) {
+          $submenu.css('max-height', $submenu[0].scrollHeight + 'px');
+        } else {
+          $submenu.css('max-height', '');
+        }
+      }
+
       $(document).trigger('ldjem:submenu:toggled', {
-        element: $toggleLink,
-        isExpanded: $parent.hasClass('is-expanded'),
+        element: $toggleBtn,
+        isExpanded: isExpanded,
         level: $parent.parents('.ldjem-offcanvas-submenu').length
       });
+    }
+
+    // Event: Submenu toggle button (delegated so it survives menu template swaps)
+    $(document).off('click.ldjem-offcanvas-submenu-' + widgetId);
+    $(document).on('click.ldjem-offcanvas-submenu-' + widgetId, `[data-ldjem-id="${widgetId}"] .ldjem-offcanvas-wrapper .ldjem-submenu-toggle`, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const $toggleBtn = $(this);
+      const $parent = $toggleBtn.closest('li');
+      toggleOffcanvasSubmenu($parent, $toggleBtn);
     });
 
     // Event: Keyboard navigation in menu - Enhanced for nested items
-    $offcanvas.on('keydown.ldjem', '.ldjem-offcanvas-menu-item a, .ldjem-offcanvas-submenu-item a', function (e) {
+    $offcanvas.on('keydown.ldjem', '.ldjem-offcanvas-menu-item a, .ldjem-offcanvas-submenu-item a, .ldjem-offcanvas-menu-item .ldjem-submenu-toggle, .ldjem-offcanvas-submenu-item .ldjem-submenu-toggle', function (e) {
       const $this = $(this);
       const $parent = $this.closest('li');
-      const $allFocusableItems = $offcanvas.find('a[role], a:not([role="presentation"])');
+      const $allFocusableItems = $offcanvas.find('a[role], a:not([role="presentation"]), .ldjem-submenu-toggle');
       const currentIndex = $allFocusableItems.index($this);
 
       switch (e.key) {
@@ -458,16 +476,10 @@
         case 'ArrowRight':
           e.preventDefault();
           if ($parent.hasClass('has-children')) {
+            const $toggleBtn = $parent.children('.ldjem-submenu-toggle');
             if (!$parent.hasClass('is-expanded')) {
-              // Expand submenu
-              $parent.addClass('is-expanded');
-              $this.attr('aria-expanded', 'true');
-              const $submenu = $parent.find('> .ldjem-offcanvas-submenu');
-              if ($submenu.length) {
-                $submenu.css('max-height', $submenu[0].scrollHeight + 'px');
-              }
+              toggleOffcanvasSubmenu($parent, $toggleBtn);
             } else {
-              // Move to first child
               const $firstChild = $parent.find('> .ldjem-offcanvas-submenu > li:first-child a');
               if ($firstChild.length) {
                 $firstChild.focus();
@@ -479,12 +491,10 @@
         case 'ArrowLeft':
           e.preventDefault();
           if ($parent.hasClass('has-children') && $parent.hasClass('is-expanded')) {
-            // Collapse submenu
-            $parent.removeClass('is-expanded');
-            $this.attr('aria-expanded', 'false');
+            const $toggleBtn = $parent.children('.ldjem-submenu-toggle');
+            toggleOffcanvasSubmenu($parent, $toggleBtn);
           } else {
-            // Move to parent menu item
-            const $parentMenuItem = $parent.closest('.ldjem-offcanvas-submenu').closest('li').children('a');
+            const $parentMenuItem = $parent.closest('.ldjem-offcanvas-submenu').closest('li').children('a, .ldjem-submenu-toggle').first();
             if ($parentMenuItem.length) {
               $parentMenuItem.focus();
             }
@@ -493,15 +503,13 @@
 
         case 'Enter':
         case ' ':
-          // If item has children and is not expanded, expand it
-          if ($parent.hasClass('has-children') && !$parent.hasClass('is-expanded')) {
+          if ($this.hasClass('ldjem-submenu-toggle')) {
             e.preventDefault();
-            $parent.addClass('is-expanded');
-            $this.attr('aria-expanded', 'true');
-            const $submenu = $parent.find('> .ldjem-offcanvas-submenu');
-            if ($submenu.length) {
-              $submenu.css('max-height', $submenu[0].scrollHeight + 'px');
-            }
+            toggleOffcanvasSubmenu($parent, $this);
+          } else if ($parent.hasClass('has-children') && !$parent.hasClass('is-expanded')) {
+            e.preventDefault();
+            const $toggleBtn = $parent.children('.ldjem-submenu-toggle');
+            toggleOffcanvasSubmenu($parent, $toggleBtn);
           }
           break;
       }
@@ -642,6 +650,7 @@
       $offcanvas.off('.ldjem').off('.ldjem-focus-trap').removeData('ldjem-offcanvas-state');
       $hamburger.off('.ldjem');
       $(document).off('.ldjem-' + widgetId);
+      $(document).off('click.ldjem-offcanvas-submenu-' + widgetId);
     }
   };
 

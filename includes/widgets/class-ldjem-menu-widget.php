@@ -111,8 +111,8 @@ class LDJEM_Menu_Widget extends Widget_Base {
         // Style Tab - Submenus
         $this->register_style_submenus();
 
-        // Style Tab - Mobile Menu
-        $this->register_style_mobile_menu();
+        // Style Tab - Off Canvas (panel, toggle, links, footer)
+        $this->register_style_offcanvas();
 
         // Advanced Tab - Extra settings
         $this->register_advanced_controls();
@@ -1325,8 +1325,9 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_submenus',
             [
-                'label' => esc_html__('Submenus', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'   => Controls_Manager::TAB_STYLE,
+                'label'       => esc_html__('Submenus', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'         => Controls_Manager::TAB_STYLE,
+                'description' => esc_html__('Applies to standard dropdown submenus and off-canvas nested menus.', 'lancedesk-responsive-menu-for-elementor'),
             ]
         );
 
@@ -1351,7 +1352,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'step'       => 100,
                 'default'    => 300,
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-submenu' => 'transition-duration: {{VALUE}}ms;',
+                    '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu' => 'transition-duration: {{VALUE}}ms;',
                 ],
             ]
         );
@@ -1401,6 +1402,41 @@ class LDJEM_Menu_Widget extends Widget_Base {
             ]
         );
 
+        $this->add_responsive_control(
+            'submenu_indicator_size',
+            [
+                'label'      => esc_html__('Toggle Icon Size', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px', 'em', 'rem'],
+                'range'      => [
+                    'px' => [
+                        'min' => 8,
+                        'max' => 40,
+                    ],
+                ],
+                'default' => [
+                    'size' => 12,
+                    'unit' => 'px',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-submenu-toggle' => 'font-size: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-submenu-toggle i, {{WRAPPER}} .ldjem-submenu-toggle svg' => 'font-size: {{SIZE}}{{UNIT}}; width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'submenu_indicator_color',
+            [
+                'label'     => esc_html__('Toggle Icon Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-submenu-toggle' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-submenu-toggle svg, {{WRAPPER}} .ldjem-submenu-toggle svg *' => 'fill: {{VALUE}}; stroke: {{VALUE}};',
+                ],
+            ]
+        );
+
         // Submenu Colors
         $this->add_control(
             'submenu_background',
@@ -1409,7 +1445,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#ffffff',
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-submenu' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -1421,7 +1457,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#333333',
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-submenu a' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-submenu a, {{WRAPPER}} .ldjem-offcanvas-submenu a' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -1443,7 +1479,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                     'unit' => 'px',
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-submenu' => 'border-radius: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu' => 'border-radius: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -1455,7 +1491,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%', 'em', 'rem'],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-submenu' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -1467,7 +1503,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%', 'em', 'rem'],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-submenu .ldjem-menu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-submenu .ldjem-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu .ldjem-offcanvas-submenu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -1477,7 +1513,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
             [
                 'name'     => 'submenu_border',
                 'label'    => esc_html__('Submenu Border', 'lancedesk-responsive-menu-for-elementor'),
-                'selector' => '{{WRAPPER}} .ldjem-submenu',
+                'selector' => '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu',
             ]
         );
 
@@ -1486,7 +1522,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
             [
                 'name'     => 'submenu_box_shadow',
                 'label'    => esc_html__('Dropdown Box Shadow', 'lancedesk-responsive-menu-for-elementor'),
-                'selector' => '{{WRAPPER}} .ldjem-submenu',
+                'selector' => '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu',
             ]
         );
 
@@ -1510,7 +1546,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 ],
                 'default'      => 'yes',
                 'selectors'    => [
-                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu-item-parent > .ldjem-submenu' => '--ldjem-vertical-submenu-border-style: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu-item-parent > .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-menu-item.has-children > .ldjem-offcanvas-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu-item.has-children > .ldjem-offcanvas-submenu' => '--ldjem-vertical-submenu-border-style: {{VALUE}};',
                 ],
                 'selectors_dictionary' => [
                     'yes' => 'solid',
@@ -1536,7 +1572,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                     'unit' => 'px',
                 ],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu-item-parent > .ldjem-submenu' => '--ldjem-vertical-submenu-border-width: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu-item-parent > .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-menu-item.has-children > .ldjem-offcanvas-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu-item.has-children > .ldjem-offcanvas-submenu' => '--ldjem-vertical-submenu-border-width: {{SIZE}}{{UNIT}};',
                 ],
                 'condition'  => [
                     'submenu_vertical_left_border_enabled' => 'yes',
@@ -1551,7 +1587,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#e0e0e0',
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu-item-parent > .ldjem-submenu' => '--ldjem-vertical-submenu-border-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu-item-parent > .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-menu-item.has-children > .ldjem-offcanvas-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu-item.has-children > .ldjem-offcanvas-submenu' => '--ldjem-vertical-submenu-border-color: {{VALUE}};',
                 ],
                 'condition' => [
                     'submenu_vertical_left_border_enabled' => 'yes',
@@ -1563,20 +1599,52 @@ class LDJEM_Menu_Widget extends Widget_Base {
     }
 
     /**
-     * Register style controls for mobile menu (hamburger)
-     * 
+     * Register style controls for off-canvas menu (panel, toggle, header, links, footer).
+     *
      * @return void
      */
-    private function register_style_mobile_menu() {
+    private function register_style_offcanvas() {
         $this->start_controls_section(
-            'section_style_mobile_menu',
+            'section_style_offcanvas',
             [
-                'label' => esc_html__('Mobile Menu', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'   => Controls_Manager::TAB_STYLE,
+                'label'     => esc_html__('Off Canvas', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'       => Controls_Manager::TAB_STYLE,
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
             ]
         );
 
-        // Hamburger Icon
+        $this->add_control(
+            'offcanvas_style_panel_heading',
+            [
+                'label' => esc_html__('Panel', 'lancedesk-responsive-menu-for-elementor'),
+                'type'  => Controls_Manager::HEADING,
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_bg_color',
+            [
+                'label'     => esc_html__('Panel Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => '#ffffff',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-bg: {{VALUE}}; background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_style_toggle_heading',
+            [
+                'label'     => esc_html__('Toggle (Hamburger)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        // Hamburger Icon styling (icon picker lives in Content > Off-Canvas Menu)
         $this->add_control(
             'hamburger_icon_size',
             [
@@ -1608,18 +1676,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-hamburger, {{WRAPPER}} .ldjem-hamburger i, {{WRAPPER}} .ldjem-hamburger svg' => 'color: {{VALUE}};',
                     '{{WRAPPER}} .ldjem-hamburger svg, {{WRAPPER}} .ldjem-hamburger svg *' => 'fill: {{VALUE}}; stroke: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'hamburger_icon',
-            [
-                'label'   => esc_html__('Toggle Icon', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::ICONS,
-                'default' => [
-                    'value'   => 'fas fa-bars',
-                    'library' => 'fa-solid',
                 ],
             ]
         );
@@ -1732,15 +1788,897 @@ class LDJEM_Menu_Widget extends Widget_Base {
             ]
         );
 
-        // Mobile Menu Background
         $this->add_control(
-            'mobile_menu_background',
+            'offcanvas_style_header_heading',
             [
-                'label'     => esc_html__('Menu Background', 'lancedesk-responsive-menu-for-elementor'),
+                'label'     => esc_html__('Header', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+                'condition' => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_header_bg_color',
+            [
+                'label'     => esc_html__('Header Background', 'lancedesk-responsive-menu-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
-                'default'   => '#ffffff',
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu.mobile' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-bg: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-header' => 'background-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_header_text_color',
+            [
+                'label'     => esc_html__('Header Text Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-logo-text' => 'color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_header_border_color',
+            [
+                'label'     => esc_html__('Header Border Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-border-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-header' => 'border-bottom-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_header_separator_enabled',
+            [
+                'label'   => esc_html__('Show Header Separator', 'lancedesk-responsive-menu-for-elementor'),
+                'type'    => Controls_Manager::SELECT,
+                'options' => [
+                    'yes' => esc_html__('Show', 'lancedesk-responsive-menu-for-elementor'),
+                    'no'  => esc_html__('Hide', 'lancedesk-responsive-menu-for-elementor'),
+                ],
+                'default' => 'yes',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-border-style: {{VALUE}};',
+                ],
+                'selectors_dictionary' => [
+                    'yes' => 'solid',
+                    'no'  => 'none',
+                ],
+                'condition' => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_header_separator_width',
+            [
+                'label'      => esc_html__('Header Separator Width', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 8,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 1,
+                    'unit' => 'px',
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-border-width: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-header' => 'border-bottom-width: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                    'offcanvas_header_separator_enabled' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_logo_width',
+            [
+                'label'      => esc_html__('Logo Width', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px', '%', 'vw'],
+                'range'      => [
+                    'px' => [
+                        'min' => 16,
+                        'max' => 640,
+                    ],
+                    '%' => [
+                        'min' => 5,
+                        'max' => 100,
+                    ],
+                    'vw' => [
+                        'min' => 5,
+                        'max' => 100,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-logo img' => 'width: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_logo_max_width',
+            [
+                'label'      => esc_html__('Logo Max Width', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px', '%', 'vw'],
+                'range'      => [
+                    'px' => [
+                        'min' => 24,
+                        'max' => 960,
+                    ],
+                    '%' => [
+                        'min' => 5,
+                        'max' => 100,
+                    ],
+                    'vw' => [
+                        'min' => 5,
+                        'max' => 100,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-logo-max-width: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-logo img' => 'max-width: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_logo_height',
+            [
+                'label'      => esc_html__('Logo Height', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px', 'vh'],
+                'range'      => [
+                    'px' => [
+                        'min' => 12,
+                        'max' => 320,
+                    ],
+                    'vh' => [
+                        'min' => 2,
+                        'max' => 60,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-logo img' => 'height: {{SIZE}}{{UNIT}}; width: auto; object-fit: contain;',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_logo_padding',
+            [
+                'label'      => esc_html__('Logo Padding', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-logo' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_logo_margin',
+            [
+                'label'      => esc_html__('Logo Margin', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-logo' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_mobile_header_style_heading',
+            [
+                'label'     => esc_html__('Mobile Header Overrides', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+                'condition' => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_mobile_header_padding',
+            [
+                'label'      => esc_html__('Header Padding (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', 'rem'],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-padding-mobile: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_mobile_header_min_height',
+            [
+                'label'      => esc_html__('Header Min Height (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 40,
+                        'max' => 140,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-min-height-mobile: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_style_close_heading',
+            [
+                'label'     => esc_html__('Close Button', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+                'condition' => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_color',
+            [
+                'label'     => esc_html__('Close Button Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => '#333333',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-close-btn-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close i, {{WRAPPER}} .ldjem-offcanvas-close svg' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close svg, {{WRAPPER}} .ldjem-offcanvas-close svg *' => 'fill: {{VALUE}}; stroke: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_bg',
+            [
+                'label'     => esc_html__('Close Button Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => 'transparent',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-close-btn-bg: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close' => 'background-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_size',
+            [
+                'label'      => esc_html__('Close Button Size', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 24,
+                        'max' => 72,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 40,
+                    'unit' => 'px',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_icon_size',
+            [
+                'label'      => esc_html__('Close Icon Size', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 12,
+                        'max' => 48,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 24,
+                    'unit' => 'px',
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-close' => 'font-size: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close i, {{WRAPPER}} .ldjem-offcanvas-close svg' => 'font-size: {{SIZE}}{{UNIT}}; width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close svg, {{WRAPPER}} .ldjem-offcanvas-close svg *' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_icon_weight',
+            [
+                'label'      => esc_html__('Close Icon Weight', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SELECT,
+                'options'    => [
+                    '300' => esc_html__('Light (300)', 'lancedesk-responsive-menu-for-elementor'),
+                    '400' => esc_html__('Regular (400)', 'lancedesk-responsive-menu-for-elementor'),
+                    '500' => esc_html__('Medium (500)', 'lancedesk-responsive-menu-for-elementor'),
+                    '600' => esc_html__('Semi Bold (600)', 'lancedesk-responsive-menu-for-elementor'),
+                    '700' => esc_html__('Bold (700)', 'lancedesk-responsive-menu-for-elementor'),
+                ],
+                'default'    => '400',
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-close:not(.has-custom-icon)::before' => 'font-weight: {{VALUE}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_icon_stroke_width',
+            [
+                'label'      => esc_html__('Close Icon Stroke Width', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 0.5,
+                        'max' => 4,
+                        'step' => 0.1,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 1.5,
+                    'unit' => 'px',
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-close.has-custom-icon svg, {{WRAPPER}} .ldjem-offcanvas-close.has-custom-icon svg *' => 'stroke-width: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_radius',
+            [
+                'label'      => esc_html__('Close Button Border Radius', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 40,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 4,
+                    'unit' => 'px',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_border_width',
+            [
+                'label'      => esc_html__('Close Button Border Width', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 10,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 0,
+                    'unit' => 'px',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_border_color',
+            [
+                'label'     => esc_html__('Close Button Border Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => 'transparent',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-close-btn-border-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close' => 'border-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_offset_top',
+            [
+                'label'     => esc_html__('Close Button Top Offset (px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::NUMBER,
+                'min'       => 0,
+                'max'       => 40,
+                'step'      => 1,
+                'default'   => 0,
+                'condition' => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_close_btn_offset_right',
+            [
+                'label'     => esc_html__('Close Button Right Offset (px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::NUMBER,
+                'min'       => 0,
+                'max'       => 40,
+                'step'      => 1,
+                'default'   => 0,
+                'condition' => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_mobile_close_btn_size',
+            [
+                'label'      => esc_html__('Close Button Size (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 24,
+                        'max' => 72,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-close-btn-size-mobile: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_mobile_close_icon_size',
+            [
+                'label'      => esc_html__('Close Icon Size (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 12,
+                        'max' => 48,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-close-icon-size-mobile: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'offcanvas_show_close_btn' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_links_heading',
+            [
+                'label'     => esc_html__('Menu Links', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'offcanvas_link_typography',
+                'selector' => '{{WRAPPER}} .ldjem-offcanvas-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a',
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_link_color',
+            [
+                'label'     => esc_html__('Link Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a, {{WRAPPER}} .ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle, {{WRAPPER}} .ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_link_hover_color',
+            [
+                'label'     => esc_html__('Link Hover Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a:hover, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a:hover' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_link_active_color',
+            [
+                'label'     => esc_html__('Link Active Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-item.is-active > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item.is-active > a' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_link_hover_bg',
+            [
+                'label'     => esc_html__('Link Hover Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a:hover, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a:hover' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_link_active_bg',
+            [
+                'label'     => esc_html__('Link Active Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-item.is-active > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item.is-active > a' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_nested_submenu_bg',
+            [
+                'label'     => esc_html__('Nested Submenu Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-nested-submenu-bg: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-submenu-item.has-children > .ldjem-offcanvas-submenu' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_link_padding',
+            [
+                'label'      => esc_html__('Link Padding', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_item_margin',
+            [
+                'label'      => esc_html__('Item Margin', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-item, {{WRAPPER}} .ldjem-offcanvas-submenu-item' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_nav_top_spacing',
+            [
+                'label'       => esc_html__('Header To Nav Spacing', 'lancedesk-responsive-menu-for-elementor'),
+                'description' => esc_html__('Space between the off-canvas header (logo section) and the navigation list.', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SLIDER,
+                'size_units'  => ['px', 'em', 'rem'],
+                'range'       => [
+                    'px'  => ['min' => 0, 'max' => 120],
+                    'em'  => ['min' => 0, 'max' => 8],
+                    'rem' => ['min' => 0, 'max' => 8],
+                ],
+                'selectors'   => [
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-container' => 'padding-top: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'   => [
+                    'offcanvas_show_header' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_separator_heading',
+            [
+                'label'     => esc_html__('Item Separators', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_separator_enabled',
+            [
+                'label'   => esc_html__('Show Separators', 'lancedesk-responsive-menu-for-elementor'),
+                'type'    => Controls_Manager::SELECT,
+                'options' => [
+                    'yes' => esc_html__('Show', 'lancedesk-responsive-menu-for-elementor'),
+                    'no'  => esc_html__('Hide', 'lancedesk-responsive-menu-for-elementor'),
+                ],
+                'default' => 'yes',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-separator-style: {{VALUE}};',
+                ],
+                'selectors_dictionary' => [
+                    'yes' => 'solid',
+                    'no'  => 'none',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'offcanvas_separator_width',
+            [
+                'label'      => esc_html__('Separator Width', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 8,
+                    ],
+                ],
+                'default' => [
+                    'size' => 1,
+                    'unit' => 'px',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-separator-width: {{SIZE}}{{UNIT}};',
+                ],
+                'condition' => [
+                    'offcanvas_separator_enabled' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_separator_color',
+            [
+                'label'     => esc_html__('Separator Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => '#f0f0f0',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-separator-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_separator_enabled' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_style_footer_heading',
+            [
+                'label'     => esc_html__('Footer & Social', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_footer_bg_color',
+            [
+                'label'     => esc_html__('Footer Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-footer' => 'background-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_footer_border_color',
+            [
+                'label'     => esc_html__('Footer Border Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-footer-border-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-footer' => 'border-top-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_footer_title_color',
+            [
+                'label'     => esc_html__('Footer Title Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-footer-title' => 'color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_social_icon_size',
+            [
+                'label'      => esc_html__('Social Icon Size', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range'      => [
+                    'px' => [
+                        'min' => 16,
+                        'max' => 64,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 36,
+                    'unit' => 'px',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_social_icon_bg_color',
+            [
+                'label'     => esc_html__('Social Icon Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-social-link' => 'background-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_social_icon_color',
+            [
+                'label'     => esc_html__('Social Icon Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-social-link' => 'color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_social_icon_hover_bg_color',
+            [
+                'label'     => esc_html__('Social Icon Hover Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-social-link:hover' => 'background-color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_social_icon_hover_color',
+            [
+                'label'     => esc_html__('Social Icon Hover Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-social-link:hover' => 'color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'offcanvas_show_footer' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_style_a11y_heading',
+            [
+                'label'     => esc_html__('Accessibility', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_focus_outline_color',
+            [
+                'label'     => esc_html__('Focus Outline Color', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => '#4A90E2',
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-focus-color: {{VALUE}};',
                 ],
             ]
         );
@@ -1749,7 +2687,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
     }
 
     /**
-     * Register off-canvas menu controls.
+     * Register off-canvas menu content controls.
      *
      * @return void
      */
@@ -1819,21 +2757,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
                     'linear'      => esc_html__('Linear', 'lancedesk-responsive-menu-for-elementor'),
                 ],
                 'default'   => 'ease-in-out',
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_bg_color',
-            [
-                'label'     => esc_html__('Panel Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'default'   => '#ffffff',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-bg: {{VALUE}}; background-color: {{VALUE}};',
-                ],
                 'condition' => [
                     'offcanvas_enable' => 'yes',
                 ],
@@ -1914,6 +2837,45 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'max'       => 99999,
                 'step'      => 1,
                 'default'   => 999,
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_content_toggle_heading',
+            [
+                'label'     => esc_html__('Toggle', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'hamburger_icon',
+            [
+                'label'     => esc_html__('Toggle Icon', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::ICONS,
+                'default'   => [
+                    'value'   => 'fas fa-bars',
+                    'library' => 'fa-solid',
+                ],
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_content_header_heading',
+            [
+                'label'     => esc_html__('Header', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
                 'condition' => [
                     'offcanvas_enable' => 'yes',
                 ],
@@ -2051,224 +3013,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'offcanvas_header_bg_color',
-            [
-                'label'     => esc_html__('Header Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-bg: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-header' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_header_text_color',
-            [
-                'label'     => esc_html__('Header Text Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-logo-text' => 'color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_header_border_color',
-            [
-                'label'     => esc_html__('Header Border Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-border-color: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-header' => 'border-bottom-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_header_separator_enabled',
-            [
-                'label'   => esc_html__('Show Header Separator', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::SELECT,
-                'options' => [
-                    'yes' => esc_html__('Show', 'lancedesk-responsive-menu-for-elementor'),
-                    'no'  => esc_html__('Hide', 'lancedesk-responsive-menu-for-elementor'),
-                ],
-                'default' => 'yes',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-border-style: {{VALUE}};',
-                ],
-                'selectors_dictionary' => [
-                    'yes' => 'solid',
-                    'no'  => 'none',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_header_separator_width',
-            [
-                'label'      => esc_html__('Header Separator Width', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 0,
-                        'max' => 8,
-                    ],
-                ],
-                'default'    => [
-                    'size' => 1,
-                    'unit' => 'px',
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-border-width: {{SIZE}}{{UNIT}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-header' => 'border-bottom-width: {{SIZE}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                    'offcanvas_header_separator_enabled' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_logo_width',
-            [
-                'label'      => esc_html__('Logo Width', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px', '%', 'vw'],
-                'range'      => [
-                    'px' => [
-                        'min' => 16,
-                        'max' => 640,
-                    ],
-                    '%' => [
-                        'min' => 5,
-                        'max' => 100,
-                    ],
-                    'vw' => [
-                        'min' => 5,
-                        'max' => 100,
-                    ],
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-logo img' => 'width: {{SIZE}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_logo_max_width',
-            [
-                'label'      => esc_html__('Logo Max Width', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px', '%', 'vw'],
-                'range'      => [
-                    'px' => [
-                        'min' => 24,
-                        'max' => 960,
-                    ],
-                    '%' => [
-                        'min' => 5,
-                        'max' => 100,
-                    ],
-                    'vw' => [
-                        'min' => 5,
-                        'max' => 100,
-                    ],
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-logo-max-width: {{SIZE}}{{UNIT}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-logo img' => 'max-width: {{SIZE}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_logo_height',
-            [
-                'label'      => esc_html__('Logo Height', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px', 'vh'],
-                'range'      => [
-                    'px' => [
-                        'min' => 12,
-                        'max' => 320,
-                    ],
-                    'vh' => [
-                        'min' => 2,
-                        'max' => 60,
-                    ],
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-logo img' => 'height: {{SIZE}}{{UNIT}}; width: auto; object-fit: contain;',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_logo_padding',
-            [
-                'label'      => esc_html__('Logo Padding', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%', 'em', 'rem'],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-logo' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_logo_margin',
-            [
-                'label'      => esc_html__('Logo Margin', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%', 'em', 'rem'],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-logo' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
             'offcanvas_show_close_btn',
             [
                 'label'        => esc_html__('Show Close Button', 'lancedesk-responsive-menu-for-elementor'),
@@ -2288,29 +3032,10 @@ class LDJEM_Menu_Widget extends Widget_Base {
             'offcanvas_close_icon',
             [
                 'label'     => esc_html__('Close Icon', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::SELECT,
-                'options'   => [
-                    'x'       => esc_html__('X', 'lancedesk-responsive-menu-for-elementor'),
-                    'arrow'   => esc_html__('Arrow', 'lancedesk-responsive-menu-for-elementor'),
-                    'chevron' => esc_html__('Chevron', 'lancedesk-responsive-menu-for-elementor'),
-                ],
-                'default'   => 'x',
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_btn_color',
-            [
-                'label'     => esc_html__('Close Button Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'default'   => '#333333',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-close-btn-color: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-close' => 'color: {{VALUE}};',
+                'type'      => Controls_Manager::ICONS,
+                'default'   => [
+                    'value'   => 'fas fa-times',
+                    'library' => 'fa-solid',
                 ],
                 'condition' => [
                     'offcanvas_enable' => 'yes',
@@ -2320,269 +3045,13 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'offcanvas_close_btn_bg',
+            'offcanvas_content_footer_heading',
             [
-                'label'     => esc_html__('Close Button Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'default'   => 'transparent',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-close-btn-bg: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-close' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_btn_size',
-            [
-                'label'      => esc_html__('Close Button Size', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 24,
-                        'max' => 72,
-                    ],
-                ],
-                'default'    => [
-                    'size' => 40,
-                    'unit' => 'px',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_icon_size',
-            [
-                'label'      => esc_html__('Close Icon Size', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 12,
-                        'max' => 48,
-                    ],
-                ],
-                'default'    => [
-                    'size' => 24,
-                    'unit' => 'px',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_btn_radius',
-            [
-                'label'      => esc_html__('Close Button Border Radius', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 0,
-                        'max' => 40,
-                    ],
-                ],
-                'default'    => [
-                    'size' => 4,
-                    'unit' => 'px',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_btn_border_width',
-            [
-                'label'      => esc_html__('Close Button Border Width', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 0,
-                        'max' => 10,
-                    ],
-                ],
-                'default'    => [
-                    'size' => 0,
-                    'unit' => 'px',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_btn_border_color',
-            [
-                'label'     => esc_html__('Close Button Border Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'default'   => 'transparent',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-close-btn-border-color: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-close' => 'border-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_btn_offset_top',
-            [
-                'label'     => esc_html__('Close Button Top Offset (px)', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::NUMBER,
-                'min'       => 0,
-                'max'       => 40,
-                'step'      => 1,
-                'default'   => 0,
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_close_btn_offset_right',
-            [
-                'label'     => esc_html__('Close Button Right Offset (px)', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::NUMBER,
-                'min'       => 0,
-                'max'       => 40,
-                'step'      => 1,
-                'default'   => 0,
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_focus_outline_color',
-            [
-                'label'     => esc_html__('Focus Outline Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'default'   => '#4A90E2',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-focus-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_mobile_header_style_heading',
-            [
-                'label'     => esc_html__('Mobile Header Overrides', 'lancedesk-responsive-menu-for-elementor'),
+                'label'     => esc_html__('Footer', 'lancedesk-responsive-menu-for-elementor'),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
                 'condition' => [
                     'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_mobile_header_padding',
-            [
-                'label'      => esc_html__('Header Padding (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em', 'rem'],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-padding-mobile: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_mobile_header_min_height',
-            [
-                'label'      => esc_html__('Header Min Height (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 40,
-                        'max' => 140,
-                    ],
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-header-min-height-mobile: {{SIZE}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_mobile_close_btn_size',
-            [
-                'label'      => esc_html__('Close Button Size (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 24,
-                        'max' => 72,
-                    ],
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-close-btn-size-mobile: {{SIZE}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_mobile_close_icon_size',
-            [
-                'label'      => esc_html__('Close Icon Size (Mobile <=576px)', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 12,
-                        'max' => 48,
-                    ],
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-close-icon-size-mobile: {{SIZE}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_close_btn' => 'yes',
                 ],
             ]
         );
@@ -2679,372 +3148,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'condition' => [
                     'offcanvas_enable' => 'yes',
                     'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_footer_bg_color',
-            [
-                'label'     => esc_html__('Footer Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-footer' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_footer_border_color',
-            [
-                'label'     => esc_html__('Footer Border Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-footer-border-color: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-footer' => 'border-top-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_footer_title_color',
-            [
-                'label'     => esc_html__('Footer Title Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-footer-title' => 'color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_social_icon_size',
-            [
-                'label'      => esc_html__('Social Icon Size', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 16,
-                        'max' => 64,
-                    ],
-                ],
-                'default'    => [
-                    'size' => 36,
-                    'unit' => 'px',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_social_icon_bg_color',
-            [
-                'label'     => esc_html__('Social Icon Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-social-link' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_social_icon_color',
-            [
-                'label'     => esc_html__('Social Icon Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-social-link' => 'color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_social_icon_hover_bg_color',
-            [
-                'label'     => esc_html__('Social Icon Hover Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-social-link:hover' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_social_icon_hover_color',
-            [
-                'label'     => esc_html__('Social Icon Hover Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-social-link:hover' => 'color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_links_heading',
-            [
-                'label'     => esc_html__('Off-Canvas Menu Links', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::HEADING,
-                'separator' => 'before',
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'name'      => 'offcanvas_link_typography',
-                'selector'  => '{{WRAPPER}} .ldjem-offcanvas-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a',
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_link_color',
-            [
-                'label'     => esc_html__('Link Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a' => 'color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_link_hover_color',
-            [
-                'label'     => esc_html__('Link Hover Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a:hover, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a:hover' => 'color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_link_active_color',
-            [
-                'label'     => esc_html__('Link Active Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-item.is-active > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item.is-active > a' => 'color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_link_hover_bg',
-            [
-                'label'     => esc_html__('Link Hover Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a:hover, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a:hover' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_link_active_bg',
-            [
-                'label'     => esc_html__('Link Active Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-item.is-active > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item.is-active > a' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_nested_submenu_bg',
-            [
-                'label'     => esc_html__('Nested Submenu Background', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-nested-submenu-bg: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-offcanvas-submenu-item.has-children > .ldjem-offcanvas-submenu' => 'background-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_link_padding',
-            [
-                'label'      => esc_html__('Link Padding', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%', 'em', 'rem'],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_item_margin',
-            [
-                'label'      => esc_html__('Item Margin', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%', 'em', 'rem'],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-item, {{WRAPPER}} .ldjem-offcanvas-submenu-item' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_nav_top_spacing',
-            [
-                'label'      => esc_html__('Header To Nav Spacing', 'lancedesk-responsive-menu-for-elementor'),
-                'description'=> esc_html__('Space between the off-canvas header (logo section) and the navigation list.', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px', 'em', 'rem'],
-                'range'      => [
-                    'px'  => ['min' => 0, 'max' => 120],
-                    'em'  => ['min' => 0, 'max' => 8],
-                    'rem' => ['min' => 0, 'max' => 8],
-                ],
-                'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-menu-container' => 'padding-top: {{SIZE}}{{UNIT}};',
-                ],
-                'condition'  => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_separator_heading',
-            [
-                'label'     => esc_html__('Item Separators', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::HEADING,
-                'separator' => 'before',
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_separator_enabled',
-            [
-                'label'   => esc_html__('Show Separators', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::SELECT,
-                'options' => [
-                    'yes' => esc_html__('Show', 'lancedesk-responsive-menu-for-elementor'),
-                    'no'  => esc_html__('Hide', 'lancedesk-responsive-menu-for-elementor'),
-                ],
-                'default' => 'yes',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-separator-style: {{VALUE}};',
-                ],
-                'selectors_dictionary' => [
-                    'yes' => 'solid',
-                    'no'  => 'none',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'offcanvas_separator_width',
-            [
-                'label'      => esc_html__('Separator Width', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
-                    'px' => [
-                        'min' => 0,
-                        'max' => 8,
-                    ],
-                ],
-                'default' => [
-                    'size' => 1,
-                    'unit' => 'px',
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-separator-width: {{SIZE}}{{UNIT}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_separator_enabled' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_separator_color',
-            [
-                'label'     => esc_html__('Separator Color', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::COLOR,
-                'default'   => '#f0f0f0',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-separator-color: {{VALUE}};',
-                ],
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_separator_enabled' => 'yes',
                 ],
             ]
         );
@@ -3589,7 +3692,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
         // Render menu items
         printf(
             '<ul class="ldjem-menu ldjem-menu-root">%s</ul>',
-            wp_kses_post($this->render_menu_items($menu_items, 0, $settings))
+            LDJEM_Security::sanitize_menu_markup($this->render_menu_items($menu_items, 0, $settings))
         );
         $this->render_standard_menu_templates($menu_sets['standard'], $menu_items_map, $settings);
 
@@ -3742,7 +3845,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 '<ul class="ldjem-menu-template ldjem-menu-template-%1$s" data-ldjem-menu-variant="standard-%1$s" data-menu-id="%2$d">%3$s</ul>',
                 esc_attr($device),
                 intval($menu_id),
-                wp_kses_post($this->render_menu_items($items, 0, $settings))
+                LDJEM_Security::sanitize_menu_markup($this->render_menu_items($items, 0, $settings))
             );
         }
         echo '</div>';
@@ -4074,8 +4177,14 @@ JS;
             $z_index = 100;
         }
 
+        $submenu_trigger = !empty($settings['submenu_trigger']) ? sanitize_key($settings['submenu_trigger']) : 'click';
+        $submenu_accordion = (!empty($settings['submenu_accordion']) && 'yes' === $settings['submenu_accordion']) ? 'yes' : 'no';
+        if (!in_array($submenu_trigger, ['hover', 'click', 'hover_click'], true)) {
+            $submenu_trigger = 'click';
+        }
+
         printf(
-            '<div class="ldjem-menu-wrapper ldjem-menu-wrapper-offcanvas" data-ldjem-id="%1$s" data-ldjem-offcanvas="true" data-offcanvas-desktop="%2$s" data-offcanvas-tablet="%3$s" data-offcanvas-mobile="%4$s" data-direction-desktop="%5$s" data-direction-tablet="%6$s" data-direction-mobile="%7$s" data-animation-duration-desktop="%8$d" data-animation-duration-tablet="%9$d" data-animation-duration-mobile="%10$d" data-panel-size-desktop="%11$d" data-panel-size-tablet="%12$d" data-panel-size-mobile="%13$d" data-panel-height-desktop="%14$d" data-panel-height-tablet="%15$d" data-panel-height-mobile="%16$d" data-desktop-layout="%17$s" data-tablet-layout="%18$s" data-mobile-layout="%19$s" data-menu-id-desktop="%20$d" data-menu-id-tablet="%21$d" data-menu-id-mobile="%22$d">',
+            '<div class="ldjem-menu-wrapper ldjem-menu-wrapper-offcanvas" data-ldjem-id="%1$s" data-ldjem-offcanvas="true" data-offcanvas-desktop="%2$s" data-offcanvas-tablet="%3$s" data-offcanvas-mobile="%4$s" data-direction-desktop="%5$s" data-direction-tablet="%6$s" data-direction-mobile="%7$s" data-animation-duration-desktop="%8$d" data-animation-duration-tablet="%9$d" data-animation-duration-mobile="%10$d" data-panel-size-desktop="%11$d" data-panel-size-tablet="%12$d" data-panel-size-mobile="%13$d" data-panel-height-desktop="%14$d" data-panel-height-tablet="%15$d" data-panel-height-mobile="%16$d" data-desktop-layout="%17$s" data-tablet-layout="%18$s" data-mobile-layout="%19$s" data-menu-id-desktop="%20$d" data-menu-id-tablet="%21$d" data-menu-id-mobile="%22$d" data-submenu-trigger="%23$s" data-submenu-accordion="%24$s">',
             esc_attr($widget_id),
             esc_attr($offcanvas_on_desktop),
             esc_attr($offcanvas_on_tablet),
@@ -4097,7 +4206,9 @@ JS;
             esc_attr($mobile_layout),
             !empty($offcanvas_menu_ids['desktop']) ? intval($offcanvas_menu_ids['desktop']) : 0,
             !empty($offcanvas_menu_ids['tablet']) ? intval($offcanvas_menu_ids['tablet']) : 0,
-            !empty($offcanvas_menu_ids['mobile']) ? intval($offcanvas_menu_ids['mobile']) : 0
+            !empty($offcanvas_menu_ids['mobile']) ? intval($offcanvas_menu_ids['mobile']) : 0,
+            esc_attr($submenu_trigger),
+            esc_attr($submenu_accordion)
         );
 
         $this->render_hamburger_menu($settings);
@@ -4127,7 +4238,7 @@ JS;
         }
 
         echo '<div class="ldjem-offcanvas-menu-container">';
-        echo '<ul class="ldjem-offcanvas-menu">' . wp_kses_post($this->render_offcanvas_menu_items($menu_items, 0, $settings)) . '</ul>';
+        echo '<ul class="ldjem-offcanvas-menu">' . LDJEM_Security::sanitize_menu_markup($this->render_offcanvas_menu_items($menu_items, 0, $settings)) . '</ul>';
         echo '<div class="ldjem-offcanvas-device-templates" hidden aria-hidden="true">';
         foreach (['desktop', 'tablet', 'mobile'] as $device) {
             $menu_id = !empty($offcanvas_menu_ids[$device]) ? intval($offcanvas_menu_ids[$device]) : 0;
@@ -4136,7 +4247,7 @@ JS;
                 '<ul class="ldjem-offcanvas-menu-template ldjem-offcanvas-menu-template-%1$s" data-ldjem-menu-variant="offcanvas-%1$s" data-menu-id="%2$d">%3$s</ul>',
                 esc_attr($device),
                 intval($menu_id),
-                wp_kses_post($this->render_offcanvas_menu_items($items, 0, $settings))
+                LDJEM_Security::sanitize_menu_markup($this->render_offcanvas_menu_items($items, 0, $settings))
             );
         }
         echo '</div>';
@@ -4235,18 +4346,75 @@ JS;
         echo '</div>';
 
         if (!empty($settings['offcanvas_show_close_btn']) && 'yes' === $settings['offcanvas_show_close_btn']) {
-            $icon = !empty($settings['offcanvas_close_icon']) ? sanitize_key($settings['offcanvas_close_icon']) : 'x';
+            $close_icon_config = $this->resolve_offcanvas_close_icon_config($settings);
+            $button_classes = ['ldjem-offcanvas-close'];
 
-            if (!in_array($icon, ['x', 'arrow', 'chevron'], true)) {
-                $icon = 'x';
+            if ('icon' === $close_icon_config['mode']) {
+                $button_classes[] = 'has-custom-icon';
+            } else {
+                $legacy = !empty($close_icon_config['legacy']) ? sanitize_key($close_icon_config['legacy']) : 'x';
+                if (!in_array($legacy, ['x', 'arrow', 'chevron'], true)) {
+                    $legacy = 'x';
+                }
+                $button_classes[] = 'icon-' . $legacy;
             }
 
             printf(
-                '<button class="ldjem-offcanvas-close icon-%1$s" type="button" aria-label="%2$s"></button>',
-                esc_attr($icon),
+                '<button class="%1$s" type="button" aria-label="%2$s">',
+                esc_attr(implode(' ', $button_classes)),
                 esc_attr__('Close menu', 'lancedesk-responsive-menu-for-elementor')
             );
+
+            if ('icon' === $close_icon_config['mode']) {
+                Icons_Manager::render_icon($close_icon_config['icon'], ['aria-hidden' => 'true']);
+            }
+
+            echo '</button>';
         }
+    }
+
+    /**
+     * Resolve off-canvas close icon settings for render (Elementor icons + legacy select values).
+     *
+     * @param array $settings Widget settings.
+     * @return array{mode:string,legacy?:string,icon?:array}
+     */
+    private function resolve_offcanvas_close_icon_config($settings) {
+        $close_icon = isset($settings['offcanvas_close_icon']) ? $settings['offcanvas_close_icon'] : [];
+        $legacy_icons = ['x', 'arrow', 'chevron'];
+
+        if (is_string($close_icon)) {
+            $legacy = in_array($close_icon, $legacy_icons, true) ? $close_icon : 'x';
+            return [
+                'mode'   => 'legacy',
+                'legacy' => $legacy,
+            ];
+        }
+
+        if (is_array($close_icon)) {
+            $value = isset($close_icon['value']) ? trim((string) $close_icon['value']) : '';
+            $library = isset($close_icon['library']) ? trim((string) $close_icon['library']) : '';
+
+            // Old select-based values stored inside the icons control after migration.
+            if ('' !== $value && in_array($value, $legacy_icons, true) && '' === $library) {
+                return [
+                    'mode'   => 'legacy',
+                    'legacy' => $value,
+                ];
+            }
+
+            if ('' !== $value) {
+                return [
+                    'mode' => 'icon',
+                    'icon' => $close_icon,
+                ];
+            }
+        }
+
+        return [
+            'mode'   => 'legacy',
+            'legacy' => 'x',
+        ];
     }
 
     /**
@@ -4295,6 +4463,49 @@ JS;
      * @param array $settings Widget settings.
      * @return string
      */
+    /**
+     * CSS animation class for submenu panels from Style > Submenus.
+     *
+     * @param array $settings Widget settings.
+     * @return string
+     */
+    private function get_submenu_animation_class($settings) {
+        $animation = !empty($settings['submenu_animation']) ? sanitize_key($settings['submenu_animation']) : 'fade';
+
+        if ('none' === $animation || empty($animation)) {
+            return '';
+        }
+
+        return 'animation-' . $animation;
+    }
+
+    /**
+     * Render submenu toggle button markup shared by standard and off-canvas menus.
+     *
+     * @param array $settings Widget settings.
+     * @return string
+     */
+    private function render_submenu_toggle_markup($settings) {
+        $html = '<button class="ldjem-submenu-toggle" type="button" aria-label="' . esc_attr__('Toggle submenu', 'lancedesk-responsive-menu-for-elementor') . '" aria-expanded="false">';
+
+        $icon_html = '';
+        if (!empty($settings['submenu_indicator_icon']) && !empty($settings['submenu_indicator_icon']['value'])) {
+            ob_start();
+            Icons_Manager::render_icon($settings['submenu_indicator_icon'], ['aria-hidden' => 'true']);
+            $icon_html = trim(ob_get_clean());
+        }
+
+        if ('' !== $icon_html) {
+            $html .= $icon_html;
+        } else {
+            $html .= '<span class="ldjem-submenu-toggle-fallback" aria-hidden="true">&#9662;</span>';
+        }
+
+        $html .= '</button>';
+
+        return $html;
+    }
+
     private function render_offcanvas_menu_items($items, $level = 0, $settings = []) {
         if (empty($items)) {
             return '';
@@ -4333,19 +4544,22 @@ JS;
             );
 
             $html .= sprintf(
-                '<a href="%1$s"%2$s%3$s%4$s>%5$s</a>',
+                '<a href="%1$s"%2$s%3$s>%4$s</a>',
                 esc_url($item->url),
                 !empty($item->target) ? ' target="' . esc_attr($item->target) . '"' : ((!empty($settings['link_target']) && in_array($settings['link_target'], ['_blank', '_self'], true)) ? ' target="' . esc_attr($settings['link_target']) . '"' : ''),
-                !empty($item->children) ? ' aria-haspopup="true" aria-expanded="false"' : '',
                 !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : '',
                 esc_html($item->title)
             );
 
             if (!empty($item->children)) {
+                $html .= $this->render_submenu_toggle_markup($settings);
+
+                $animation_class = esc_attr($this->get_submenu_animation_class($settings));
                 $html .= sprintf(
-                    '<ul class="ldjem-offcanvas-submenu ldjem-offcanvas-submenu-level-%1$d">%2$s</ul>',
+                    '<ul class="ldjem-offcanvas-submenu ldjem-offcanvas-submenu-level-%1$d%2$s">%3$s</ul>',
                     intval($level + 1),
-                    wp_kses_post($this->render_offcanvas_menu_items($item->children, $level + 1, $settings))
+                    $animation_class ? ' ' . $animation_class : '',
+                    LDJEM_Security::sanitize_menu_markup($this->render_offcanvas_menu_items($item->children, $level + 1, $settings))
                 );
             }
 
@@ -4453,20 +4667,14 @@ JS;
 
             // Render submenu if has children
             if (!empty($item->children)) {
-                $html .= '<button class="ldjem-submenu-toggle" type="button" aria-label="' . esc_attr__('Toggle submenu', 'lancedesk-responsive-menu-for-elementor') . '" aria-expanded="false">';
-                if (!empty($settings['submenu_indicator_icon']) && !empty($settings['submenu_indicator_icon']['value'])) {
-                    ob_start();
-                    Icons_Manager::render_icon($settings['submenu_indicator_icon'], ['aria-hidden' => 'true']);
-                    $html .= ob_get_clean();
-                } else {
-                    $html .= '<span aria-hidden="true">&#9662;</span>';
-                }
-                $html .= '</button>';
+                $html .= $this->render_submenu_toggle_markup($settings);
 
+                $animation_class = esc_attr($this->get_submenu_animation_class($settings));
                 $html .= sprintf(
-                    '<ul class="ldjem-submenu ldjem-submenu-level-%d">%s</ul>',
+                    '<ul class="ldjem-submenu ldjem-submenu-level-%d%s">%s</ul>',
                     $level + 1,
-                    wp_kses_post($this->render_menu_items($item->children, $level + 1, $settings))
+                    $animation_class ? ' ' . $animation_class : '',
+                    LDJEM_Security::sanitize_menu_markup($this->render_menu_items($item->children, $level + 1, $settings))
                 );
             }
 

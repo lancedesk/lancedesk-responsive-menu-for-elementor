@@ -637,8 +637,9 @@
    ======================================== */
 
 /* Fade Animation */
-.ldjem-submenu.animation-fade {
-    animation: ldjem-fade-in var(--ldjem-animation-duration) ease forwards;
+.ldjem-submenu.animation-fade,
+.ldjem-offcanvas-submenu.animation-fade {
+    animation: ldjem-fade-in var(--ldjem-animation-duration, 0.3s) ease forwards;
 }
 
 @keyframes ldjem-fade-in {
@@ -651,8 +652,9 @@
 }
 
 /* Slide Animation */
-.ldjem-submenu.animation-slide {
-    animation: ldjem-slide-down var(--ldjem-animation-duration) ease forwards;
+.ldjem-submenu.animation-slide,
+.ldjem-offcanvas-submenu.animation-slide {
+    animation: ldjem-slide-down var(--ldjem-animation-duration, 0.3s) ease forwards;
 }
 
 @keyframes ldjem-slide-down {

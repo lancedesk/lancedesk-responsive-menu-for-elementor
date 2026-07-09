@@ -540,6 +540,14 @@
         // This still works when Elementor re-renders widgets after init.
         document.removeEventListener('click', window.__ldjemSubmenuFallbackHandler || function () {}, true);
         window.__ldjemSubmenuFallbackHandler = function (evt) {
+            function isOffcanvasWrapper(wrapper) {
+                if (!wrapper) {
+                    return false;
+                }
+                return wrapper.classList.contains('ldjem-menu-wrapper-offcanvas') ||
+                    wrapper.getAttribute('data-ldjem-offcanvas') === 'true';
+            }
+
             // Close click-triggered submenus when clicking outside any widget.
             var wrapperTarget = evt.target.closest('.ldjem-menu-wrapper[data-ldjem-id]');
             if (!wrapperTarget) {
@@ -566,6 +574,11 @@
             var sourceEl = toggle || parentLinkClick;
             var wrapper = sourceEl.closest('.ldjem-menu-wrapper[data-ldjem-id]');
             if (!wrapper) {
+                return;
+            }
+
+            // Off-canvas submenus are handled by ldjem-offcanvas.js.
+            if (isOffcanvasWrapper(wrapper)) {
                 return;
             }
 
