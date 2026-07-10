@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.11
+Stable tag: 1.0.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,11 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 5. Submenu styling and trigger options.
 
 == Changelog ==
+
+= 1.0.12 =
+* Add Toggle Alignment control (left, center, right) under Content > Off-Canvas Menu > Toggle.
+* Fix panel background no longer bleeding onto the off-canvas hamburger row wrapper.
+* Remove Off-Canvas Presets section and unused preset infrastructure.
 
 = 1.0.11 =
 * Reorganize widget controls: new Display Mode section at the top with per-device Standard Menu / Off-Canvas selectors.
@@ -140,6 +145,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.12 =
+Adds off-canvas toggle alignment control and removes the non-functional presets section.
 
 = 1.0.11 =
 Clearer Display Mode controls per device, smarter off-canvas field visibility, and WordPress 7.0 compatibility.

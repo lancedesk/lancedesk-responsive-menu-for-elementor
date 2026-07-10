@@ -124,31 +124,8 @@ class LDJEM_Admin {
                 'prefix'      => LDJEM_PREFIX,
                 'text_domain' => LDJEM_TEXT_DOMAIN,
                 'widget_name' => LDJEM_PREFIX . '_menu',
-                'preset_settings' => $this->get_preset_settings_for_editor(),
             ]
         );
-    }
-
-    /**
-     * Prepare preset settings map for Elementor editor JS.
-     *
-     * @return array
-     */
-    private function get_preset_settings_for_editor() {
-        if (!class_exists('LDJEM_Presets')) {
-            return [];
-        }
-
-        $presets = LDJEM_Presets::get_all_presets();
-        $settings_map = [];
-
-        foreach ($presets as $preset_id => $preset_data) {
-            $settings_map[$preset_id] = !empty($preset_data['settings']) && is_array($preset_data['settings'])
-                ? $preset_data['settings']
-                : [];
-        }
-
-        return $settings_map;
     }
 
     /**

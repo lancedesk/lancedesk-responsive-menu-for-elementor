@@ -91,7 +91,6 @@ class LDJEM_Plugin {
         require_once LDJEM_PLUGIN_DIR . 'includes/utilities/class-ldjem-security.php';
         require_once LDJEM_PLUGIN_DIR . 'includes/utilities/class-ldjem-helpers.php';
         require_once LDJEM_PLUGIN_DIR . 'includes/utilities/class-ldjem-validator.php';
-            require_once LDJEM_PLUGIN_DIR . 'includes/utilities/class-ldjem-presets.php';
 
         // Load core classes
         require_once LDJEM_PLUGIN_DIR . 'includes/class-ldjem-admin.php';

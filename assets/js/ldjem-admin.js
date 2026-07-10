@@ -99,26 +99,11 @@
 
             model._ldjemWidgetBound = true;
 
-            model.on('change:settings:offcanvas_preset', function() {
-                var presetId = model.getSetting('offcanvas_preset');
-                if (!self.isPresetAutoApplyEnabled(model)) {
-                    return;
-                }
-                self.applyPresetToModel(model, presetId);
-            });
-
-            model.on('change:settings:offcanvas_preset_auto_apply', function() {
-                var autoApplyEnabled = self.isPresetAutoApplyEnabled(model);
-                var presetId = model.getSetting('offcanvas_preset');
-
-                if (!autoApplyEnabled || !presetId || presetId === 'none') {
-                    return;
-                }
-
-                self.applyPresetToModel(model, presetId);
-            });
-
             model.on('change:settings:mobile_hamburger_position', function() {
+                self.applyHamburgerPositionClass(model);
+            });
+
+            model.on('change:settings:offcanvas_toggle_alignment', function() {
                 self.applyHamburgerPositionClass(model);
             });
 
@@ -409,53 +394,32 @@
                 return;
             }
 
-            var position = model.getSetting('mobile_hamburger_position') || 'left';
-            if (['left', 'center', 'right'].indexOf(position) === -1) {
-                position = 'left';
+            var standardPosition = model.getSetting('mobile_hamburger_position') || 'left';
+            var offcanvasPosition = model.getSetting('offcanvas_toggle_alignment') || standardPosition;
+
+            if (['left', 'center', 'right'].indexOf(standardPosition) === -1) {
+                standardPosition = 'left';
+            }
+            if (['left', 'center', 'right'].indexOf(offcanvasPosition) === -1) {
+                offcanvasPosition = standardPosition;
             }
 
             var widgetSelector = '.elementor-element-' + widgetId;
-            var $buttons = this.getPreviewScope().find(widgetSelector + ' .ldjem-hamburger-btn, ' + widgetSelector + ' .ldjem-hamburger');
+            var $offcanvasButtons = this.getPreviewScope().find(widgetSelector + ' .ldjem-menu-wrapper-offcanvas .ldjem-hamburger-btn, ' + widgetSelector + ' .ldjem-menu-wrapper-offcanvas .ldjem-hamburger');
+            var $standardButtons = this.getPreviewScope().find(widgetSelector + ' .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas) .ldjem-hamburger-btn, ' + widgetSelector + ' .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas) .ldjem-hamburger');
 
-            if (!$buttons.length) {
-                return;
-            }
-
-            $buttons
-                .removeClass('ldjem-hamburger-left ldjem-hamburger-center ldjem-hamburger-right')
-                .addClass('ldjem-hamburger-' + position);
-        },
-
-        isPresetAutoApplyEnabled: function(model) {
-            var settingValue = model.getSetting('offcanvas_preset_auto_apply');
-
-            if (typeof settingValue === 'undefined' || settingValue === null || settingValue === '') {
-                return true;
-            }
-
-            return settingValue === 'yes';
-        },
-
-        applyPresetToModel: function(model, presetId) {
-            if (!presetId || presetId === 'none') {
-                return;
-            }
-
-            var allPresetSettings = window.ldjemAdmin.preset_settings || {};
-            var presetSettings = allPresetSettings[presetId];
-
-            if (!presetSettings || typeof presetSettings !== 'object') {
-                return;
-            }
-
-            Object.keys(presetSettings).forEach(function(key) {
-                var value = presetSettings[key];
-                if (typeof model.setSetting === 'function') {
-                    model.setSetting(key, value);
-                } else if (model.get('settings') && typeof model.get('settings').set === 'function') {
-                    model.get('settings').set(key, value);
+            var applyPosition = function($buttons, position) {
+                if (!$buttons.length) {
+                    return;
                 }
-            });
+
+                $buttons
+                    .removeClass('ldjem-hamburger-left ldjem-hamburger-center ldjem-hamburger-right')
+                    .addClass('ldjem-hamburger-' + position);
+            };
+
+            applyPosition($offcanvasButtons, offcanvasPosition);
+            applyPosition($standardButtons, standardPosition);
         }
     };
 

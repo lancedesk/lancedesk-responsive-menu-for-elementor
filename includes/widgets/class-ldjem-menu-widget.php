@@ -102,9 +102,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
         // Off-Canvas Menu settings (when at least one device uses off-canvas)
         $this->register_offcanvas_controls();
 
-        // Preset & Configuration
-        $this->register_preset_controls();
-
         // Per-device off-canvas overrides (direction, animation, panel size)
         $this->register_breakpoint_controls();
 
@@ -980,38 +977,15 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'default' => 'left',
                 // Make position live in Elementor editor without requiring full re-render.
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-wrapper .ldjem-hamburger' => '{{VALUE}};',
+                    '{{WRAPPER}} .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas) .ldjem-hamburger' => '{{VALUE}};',
                 ],
                 'selectors_dictionary' => [
                     'left' => 'margin-left: 0; margin-right: auto',
                     'center' => 'margin-left: auto; margin-right: auto',
                     'right' => 'margin-left: auto; margin-right: 0',
                 ],
-                // Allow position control for both standard and off-canvas hamburger.
-                'conditions' => [
-                    'relation' => 'or',
-                    'terms'    => [
-                        [
-                            'name'     => 'mobile_hamburger_toggle',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'relation' => 'and',
-                            'terms'    => [
-                                [
-                                    'name'     => 'offcanvas_enable',
-                                    'operator' => '===',
-                                    'value'    => 'yes',
-                                ],
-                                [
-                                    'name'     => 'offcanvas_on_mobile',
-                                    'operator' => '===',
-                                    'value'    => 'yes',
-                                ],
-                            ],
-                        ],
-                    ],
+                'condition' => [
+                    'mobile_hamburger_toggle' => 'yes',
                 ],
             ]
         );
@@ -2910,6 +2884,41 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
+            'offcanvas_toggle_alignment',
+            [
+                'label'   => esc_html__('Toggle Alignment', 'lancedesk-responsive-menu-for-elementor'),
+                'type'    => Controls_Manager::CHOOSE,
+                'options' => [
+                    'left' => [
+                        'title' => esc_html__('Left', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-h-align-left',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-h-align-center',
+                    ],
+                    'right' => [
+                        'title' => esc_html__('Right', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-h-align-right',
+                    ],
+                ],
+                'default' => 'left',
+                'toggle'  => false,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-menu-wrapper-offcanvas .ldjem-hamburger' => '{{VALUE}};',
+                ],
+                'selectors_dictionary' => [
+                    'left'   => 'margin-left: 0; margin-right: auto',
+                    'center' => 'margin-left: auto; margin-right: auto',
+                    'right'  => 'margin-left: auto; margin-right: 0',
+                ],
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
             'offcanvas_content_header_heading',
             [
                 'label'     => esc_html__('Header', 'lancedesk-responsive-menu-for-elementor'),
@@ -3227,56 +3236,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'condition' => [
                     'offcanvas_enable' => 'yes',
                     'offcanvas_show_footer' => 'yes',
-                ],
-            ]
-        );
-
-        $this->end_controls_section();
-    }
-
-    /**
-     * Register preset controls.
-     *
-     * @return void
-     */
-    private function register_preset_controls() {
-        $this->start_controls_section(
-            'section_offcanvas_presets',
-            [
-                'label'      => esc_html__('Off-Canvas Presets', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'        => Controls_Manager::TAB_CONTENT,
-                'conditions' => $this->get_offcanvas_active_conditions(),
-            ]
-        );
-
-        $preset_options = ['none' => esc_html__('Custom (No Preset)', 'lancedesk-responsive-menu-for-elementor')];
-        if (class_exists('LDJEM_Presets')) {
-            $preset_options = LDJEM_Presets::get_preset_labels();
-        }
-
-        $this->add_control(
-            'offcanvas_preset',
-            [
-                'label'       => esc_html__('Preset', 'lancedesk-responsive-menu-for-elementor'),
-                'type'        => Controls_Manager::SELECT,
-                'options'     => $preset_options,
-                'default'     => 'none',
-                'description' => esc_html__('Choose a starting preset, then customize controls below.', 'lancedesk-responsive-menu-for-elementor'),
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_preset_auto_apply',
-            [
-                'label'        => esc_html__('Auto-Apply Preset Updates', 'lancedesk-responsive-menu-for-elementor'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
-                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
-                'return_value' => 'yes',
-                'default'      => 'yes',
-                'description'  => esc_html__('When enabled, selecting a preset will overwrite mapped off-canvas controls.', 'lancedesk-responsive-menu-for-elementor'),
-                'condition'    => [
-                    'offcanvas_preset!' => 'none',
                 ],
             ]
         );
@@ -3641,11 +3600,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
      */
     protected function render() {
         $settings = $this->get_settings_for_display();
-        $preset_id = !empty($settings['offcanvas_preset']) ? sanitize_key($settings['offcanvas_preset']) : 'none';
-
-        if ('none' !== $preset_id && class_exists('LDJEM_Presets')) {
-            LDJEM_Presets::apply_preset($settings, $preset_id);
-        }
 
         // Resolve menus (global + per-device + off-canvas per-device).
         $menu_depth = LDJEM_Security::sanitize_int($settings['menu_depth'], 3);
@@ -4355,7 +4309,7 @@ JS;
             esc_attr($wrapper_style)
         );
 
-        $this->render_hamburger_menu($settings);
+        $this->render_hamburger_menu($settings, true);
 
         printf(
             '<div class="ldjem-offcanvas-wrapper direction-%1$s" data-ldjem-id="%2$s" role="dialog" aria-modal="true" aria-hidden="true" aria-label="%3$s" style="%4$s">',
@@ -4578,7 +4532,7 @@ JS;
     }
 
     /**
-     * Resolve off-canvas close icon for render (Elementor icons + legacy preset strings).
+     * Resolve off-canvas close icon for render (Elementor icons + legacy icon strings).
      *
      * @param array $settings Widget settings.
      * @return array Elementor icon setting.
@@ -4821,16 +4775,38 @@ JS;
     }
 
     /**
-     * Render hamburger menu button
-     * 
-     * @param array $settings Widget settings
-     * @return void
+     * Resolve hamburger alignment for standard or off-canvas toggle.
+     *
+     * @param array $settings Widget settings.
+     * @param bool  $for_offcanvas Whether the toggle is for off-canvas mode.
+     * @return string left|center|right
      */
-    private function render_hamburger_menu($settings) {
-        $position = sanitize_key(isset($settings['mobile_hamburger_position']) ? $settings['mobile_hamburger_position'] : 'left');
+    private function resolve_hamburger_position($settings, $for_offcanvas = false) {
+        if ($for_offcanvas) {
+            $position = sanitize_key($settings['offcanvas_toggle_alignment'] ?? '');
+            if ($position === '' || !in_array($position, ['left', 'center', 'right'], true)) {
+                $position = sanitize_key($settings['mobile_hamburger_position'] ?? 'left');
+            }
+        } else {
+            $position = sanitize_key($settings['mobile_hamburger_position'] ?? 'left');
+        }
+
         if (!in_array($position, ['left', 'center', 'right'], true)) {
             $position = 'left';
         }
+
+        return $position;
+    }
+
+    /**
+     * Render hamburger menu button
+     * 
+     * @param array $settings Widget settings
+     * @param bool  $for_offcanvas Whether rendering the off-canvas toggle.
+     * @return void
+     */
+    private function render_hamburger_menu($settings, $for_offcanvas = false) {
+        $position = $this->resolve_hamburger_position($settings, $for_offcanvas);
 
         $has_custom_icon = !empty($settings['hamburger_icon']) && !empty($settings['hamburger_icon']['value']);
         $button_classes = 'ldjem-hamburger ldjem-hamburger-btn ldjem-hamburger-' . esc_attr($position);

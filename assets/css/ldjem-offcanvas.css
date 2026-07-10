@@ -696,7 +696,7 @@ body.ldjem-offcanvas-open {
 }
 
 /* ============================================================================
-   DARK MODE THEME (Optional Preset)
+   DARK MODE THEME (Optional)
    ============================================================================ */
 
 .ldjem-offcanvas-wrapper.theme-dark {
@@ -758,6 +758,8 @@ body.ldjem-offcanvas-open {
    ============================================================================ */
 
 .ldjem-menu-wrapper-offcanvas {
+  display: flex;
+  width: 100%;
   background: transparent;
 }
 
