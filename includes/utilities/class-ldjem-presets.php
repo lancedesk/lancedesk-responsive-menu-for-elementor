@@ -102,7 +102,10 @@ class LDJEM_Presets {
                 'offcanvas_header_text' => esc_html__('Menu', 'lancedesk-responsive-menu-for-elementor'),
                 'offcanvas_header_bg_color' => '#ffffff',
                 'offcanvas_show_close_btn' => 'yes',
-                'offcanvas_close_icon' => 'x',
+                'offcanvas_close_icon' => [
+                    'value'   => 'fas fa-times',
+                    'library' => 'fa-solid',
+                ],
                 
                 // Footer
                 'offcanvas_show_footer' => 'yes',
@@ -152,7 +155,10 @@ class LDJEM_Presets {
                 'offcanvas_header_text' => esc_html__('Navigate', 'lancedesk-responsive-menu-for-elementor'),
                 'offcanvas_header_bg_color' => '#242424',
                 'offcanvas_show_close_btn' => 'yes',
-                'offcanvas_close_icon' => 'arrow',
+                'offcanvas_close_icon' => [
+                    'value'   => 'fas fa-arrow-left',
+                    'library' => 'fa-solid',
+                ],
                 
                 // Footer
                 'offcanvas_show_footer' => 'yes',
@@ -247,7 +253,10 @@ class LDJEM_Presets {
                 'offcanvas_header_text' => esc_html__('Menu', 'lancedesk-responsive-menu-for-elementor'),
                 'offcanvas_header_bg_color' => '#f5f5f5',
                 'offcanvas_show_close_btn' => 'yes',
-                'offcanvas_close_icon' => 'chevron',
+                'offcanvas_close_icon' => [
+                    'value'   => 'fas fa-chevron-left',
+                    'library' => 'fa-solid',
+                ],
                 
                 // Footer
                 'offcanvas_show_footer' => 'yes',

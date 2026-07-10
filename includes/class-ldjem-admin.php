@@ -34,6 +34,7 @@ class LDJEM_Admin {
     private function setup_hooks() {
         // Enqueue admin styles
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
+        add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_editor_scripts']);
 
         // Show activation notice
         add_action('admin_notices', [$this, 'show_activation_notice']);
@@ -48,8 +49,34 @@ class LDJEM_Admin {
      * @return void
      */
     public function enqueue_admin_scripts() {
-        // Only enqueue on Elementor pages
         if (!$this->is_elementor_admin_page()) {
+            return;
+        }
+
+        $this->register_editor_assets(false);
+    }
+
+    /**
+     * Enqueue editor scripts from Elementor's editor hook.
+     *
+     * @return void
+     */
+    public function enqueue_editor_scripts() {
+        $this->register_editor_assets(true);
+    }
+
+    /**
+     * Register admin/editor assets.
+     *
+     * @param bool $force When true, skip the admin screen check.
+     * @return void
+     */
+    private function register_editor_assets($force = false) {
+        if (!$force && !$this->is_elementor_admin_page()) {
+            return;
+        }
+
+        if (wp_script_is(LDJEM_PREFIX . '-admin', 'enqueued') || wp_script_is(LDJEM_PREFIX . '-admin', 'done')) {
             return;
         }
 
@@ -64,6 +91,14 @@ class LDJEM_Admin {
             $admin_js_rel = 'assets/js/ldjem-admin.js';
         }
 
+        $admin_js_path = LDJEM_PLUGIN_DIR . $admin_js_rel;
+        $admin_js_ver = file_exists($admin_js_path) ? (string) filemtime($admin_js_path) : LDJEM_VERSION;
+        $script_deps = ['jquery'];
+
+        if (wp_script_is('elementor-editor', 'registered')) {
+            $script_deps[] = 'elementor-editor';
+        }
+
         // Enqueue admin stylesheet
         wp_enqueue_style(
             LDJEM_PREFIX . '-admin',
@@ -76,8 +111,8 @@ class LDJEM_Admin {
         wp_enqueue_script(
             LDJEM_PREFIX . '-admin',
             LDJEM_PLUGIN_URL . $admin_js_rel,
-            ['jquery'],
-            LDJEM_VERSION,
+            $script_deps,
+            $admin_js_ver,
             true
         );
 

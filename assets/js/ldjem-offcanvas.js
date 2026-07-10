@@ -684,6 +684,62 @@ if (window.jQuery) {
           }, 100);
         }
       );
+
+      if (!window.__ldjemEditorIconSyncBound) {
+        window.__ldjemEditorIconSyncBound = true;
+
+        document.addEventListener('ldjem:editor-icon-sync', function (event) {
+          const detail = event && event.detail ? event.detail : {};
+          const widgetId = detail.widgetId;
+
+          if (!widgetId) {
+            return;
+          }
+
+          const widgetRoot = document.querySelector('.elementor-element-' + widgetId);
+          if (!widgetRoot) {
+            return;
+          }
+
+          if (detail.target === 'hamburger' && detail.iconHtml) {
+            widgetRoot.querySelectorAll('.ldjem-hamburger-btn, .ldjem-hamburger').forEach(function (button) {
+              button.querySelectorAll('i, svg, img').forEach(function (node) {
+                node.remove();
+              });
+              button.insertAdjacentHTML('afterbegin', detail.iconHtml);
+              button.classList.add('has-custom-icon');
+            });
+            return;
+          }
+
+          if (detail.target !== 'close') {
+            return;
+          }
+
+          widgetRoot.querySelectorAll('.ldjem-offcanvas-close').forEach(function (button) {
+            button.classList.remove('ldjem-close-type-icon', 'ldjem-close-type-letter', 'has-custom-icon', 'icon-x', 'icon-arrow', 'icon-chevron');
+            button.querySelectorAll('i, svg, img, .ldjem-close-letter').forEach(function (node) {
+              node.remove();
+            });
+
+            if (detail.closeType === 'letter') {
+              button.classList.add('ldjem-close-type-letter');
+              const letterNode = document.createElement('span');
+              letterNode.className = 'ldjem-close-letter';
+              letterNode.setAttribute('aria-hidden', 'true');
+              letterNode.textContent = detail.letter || '×';
+              button.appendChild(letterNode);
+              return;
+            }
+
+            if (detail.iconHtml) {
+              button.classList.add('ldjem-close-type-icon', 'has-custom-icon');
+              button.insertAdjacentHTML('afterbegin', detail.iconHtml);
+            }
+          });
+        });
+      }
+
       return true;
     }
 

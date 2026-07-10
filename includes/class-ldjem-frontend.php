@@ -32,10 +32,8 @@ class LDJEM_Frontend {
      * @return void
      */
     private function setup_hooks() {
-        // Enqueue frontend styles
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_scripts']);
-
-        // Enqueue Elementor frontend styles (in editor and frontend)
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_offcanvas_styles_fallback'], 20);
         add_action('elementor/frontend/after_enqueue_styles', [$this, 'enqueue_elementor_frontend_scripts']);
     }
 
@@ -86,20 +84,13 @@ class LDJEM_Frontend {
             true
         );
 
-            wp_enqueue_style(
-                LDJEM_PREFIX . '-offcanvas',
-                LDJEM_PLUGIN_URL . $offcanvas_css_rel,
-                [],
-                $offcanvas_css_ver
-            );
-
-            wp_enqueue_script(
-                LDJEM_PREFIX . '-offcanvas',
-                LDJEM_PLUGIN_URL . $offcanvas_js_rel,
-                ['jquery'],
-                $offcanvas_js_ver,
-                true
-            );
+        wp_enqueue_script(
+            LDJEM_PREFIX . '-offcanvas',
+            LDJEM_PLUGIN_URL . $offcanvas_js_rel,
+            ['jquery'],
+            $offcanvas_js_ver,
+            true
+        );
 
         // Localize script with data
         wp_localize_script(
@@ -115,13 +106,48 @@ class LDJEM_Frontend {
     }
 
     /**
+     * Fallback off-canvas styles when Elementor frontend hook did not run.
+     *
+     * @return void
+     */
+    public function enqueue_offcanvas_styles_fallback() {
+        if (wp_style_is(LDJEM_PREFIX . '-offcanvas', 'enqueued') || wp_style_is(LDJEM_PREFIX . '-offcanvas', 'done')) {
+            return;
+        }
+
+        $this->enqueue_offcanvas_styles();
+    }
+
+    /**
+     * Register off-canvas stylesheet with Elementor dependency when possible.
+     *
+     * @return void
+     */
+    private function enqueue_offcanvas_styles() {
+        $offcanvas_css_rel = 'assets/css/ldjem-offcanvas.css';
+        $offcanvas_css_path = LDJEM_PLUGIN_DIR . $offcanvas_css_rel;
+        $offcanvas_css_ver = file_exists($offcanvas_css_path) ? (string) filemtime($offcanvas_css_path) : LDJEM_VERSION;
+        $style_deps = [];
+
+        if (wp_style_is('elementor-frontend', 'registered')) {
+            $style_deps[] = 'elementor-frontend';
+        }
+
+        wp_enqueue_style(
+            LDJEM_PREFIX . '-offcanvas',
+            LDJEM_PLUGIN_URL . $offcanvas_css_rel,
+            $style_deps,
+            $offcanvas_css_ver
+        );
+    }
+
+    /**
      * Enqueue scripts for Elementor editor/frontend
      * 
      * @return void
      */
     public function enqueue_elementor_frontend_scripts() {
-        // Enqueue the same frontend styles that are loaded via wp_enqueue_scripts
-        // This ensures styles are present in Elementor preview
+        $this->enqueue_offcanvas_styles();
     }
 
     /**

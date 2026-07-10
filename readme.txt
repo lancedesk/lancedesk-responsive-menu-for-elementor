@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.9
+Stable tag: 1.0.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,13 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 
 == Changelog ==
 
+= 1.0.10 =
+* Add close button type toggle: Elementor icon or custom letter/character.
+* Fix close button style controls updating live in the Elementor editor (size, radius, border, weight, stroke).
+* Fix close icon not previewing live in the editor; keep the off-canvas panel open when changing icons.
+* Fix mobile off-canvas styling overrides for menu links, separators, and submenu colors.
+* Improve editor icon sync via preview iframe bridge for toggle and close icons.
+
 = 1.0.9 =
 * Reorganize off-canvas styling under Style > Off Canvas and migrate the close icon to the Elementor Icons library (with legacy fallback).
 * Align Style > Submenus controls with off-canvas nested menus: toggle icon, spacing, colors, accordion, and animation.
@@ -121,6 +128,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.10 =
+Recommended update for close button icon/letter controls, live editor preview fixes, and mobile off-canvas styling.
 
 = 1.0.9 =
 Recommended update for off-canvas submenu toggles, Style > Off Canvas reorganization, and close icon styling controls.

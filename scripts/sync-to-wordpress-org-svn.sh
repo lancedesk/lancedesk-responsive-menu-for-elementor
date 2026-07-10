@@ -28,6 +28,7 @@ if command -v rsync >/dev/null 2>&1; then
     --exclude '.distignore' \
     --exclude 'README.md' \
     --exclude 'scripts/' \
+    --exclude 'docs/' \
     --exclude "${PLUGIN_BASE}/" \
     "${PLUGIN_ROOT}/" "${SVN_ROOT}/trunk/"
 elif command -v robocopy >/dev/null 2>&1 && command -v cygpath >/dev/null 2>&1; then
@@ -36,7 +37,7 @@ elif command -v robocopy >/dev/null 2>&1 && command -v cygpath >/dev/null 2>&1; 
   export MSYS2_ARG_CONV_EXCL='*'
   set +e
   robocopy "${PLUGIN_WIN}" "${TRUNK_WIN}" /MIR /E \
-    /XD .svn .git .github directory-assets scripts "${PLUGIN_BASE}" \
+    /XD .svn .git .github directory-assets scripts docs "${PLUGIN_BASE}" \
     /XF README.md .distignore /NFL /NDL /NJH /NJS /NC /NS /NP
   RC=$?
   set -e
@@ -66,8 +67,8 @@ echo "Done. Next (from your machine, with SVN installed):"
 echo "  cd \"${SVN_ROOT}\""
 echo "  svn status"
 echo "  svn add --force trunk assets"
-echo "  svn commit -m \"Release 1.0.9 — sync trunk and plugin directory assets\""
+echo "  svn commit -m \"Release 1.0.10 — sync trunk and plugin directory assets\""
 echo ""
 echo "If this is the first tagged build for this version on .org:"
-echo "  svn cp trunk tags/1.0.9"
-echo "  svn commit -m \"Tag 1.0.9\""
+echo "  svn cp trunk tags/1.0.10"
+echo "  svn commit -m \"Tag 1.0.10\""
