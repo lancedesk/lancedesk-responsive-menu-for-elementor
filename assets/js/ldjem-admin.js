@@ -227,7 +227,7 @@
                 $wrapper.attr('data-ldjem-editor-preview-open') === 'yes';
         },
 
-        restoreOffcanvasOpenState: function(model) {
+        restoreOffcanvasOpenState: function(model, force) {
             var self = this;
             var selector = this.getWidgetSelector(model);
             if (!selector) {
@@ -244,6 +244,11 @@
                     return;
                 }
 
+                if (!force && $wrapper.attr('data-ldjem-user-closed-preview') === 'yes') {
+                    return;
+                }
+
+                $wrapper.attr('data-ldjem-user-closed-preview', 'no');
                 $wrapper.addClass('ldjem-offcanvas-is-open ldjem-editor-preview-open');
                 $wrapper.attr('data-ldjem-editor-preview-open', 'yes');
                 $offcanvas.addClass('is-open');
@@ -321,6 +326,11 @@
             }
 
             var wasOpen = preserveOffcanvasState && this.isOffcanvasOpenInPreview(model);
+            if (preserveOffcanvasState) {
+                this.restoreOffcanvasOpenState(model, true);
+                wasOpen = true;
+            }
+
             var closeType = model.getSetting('offcanvas_close_icon_type') || 'icon';
             var $closeButtons = this.getPreviewScope().find(selector + ' .ldjem-offcanvas-close');
             var self = this;
@@ -355,14 +365,12 @@
                 }
 
                 var icon = model.getSetting('offcanvas_close_icon');
-                if (!icon || !icon.value) {
-                    return;
-                }
+                var fallbackIcon = { value: 'fas fa-times', library: 'fa-solid' };
 
                 $closeBtn.addClass('ldjem-close-type-icon has-custom-icon');
-                self.renderElementorIcon(icon).then(function(html) {
+                self.renderElementorIcon(icon && icon.value ? icon : fallbackIcon).then(function(html) {
                     if (!html) {
-                        return;
+                        html = self.buildIconFallback(fallbackIcon);
                     }
 
                     $closeBtn.find('i, svg, img').remove();

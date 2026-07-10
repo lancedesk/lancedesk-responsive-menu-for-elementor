@@ -92,6 +92,14 @@ class LDJEM_Frontend {
             true
         );
 
+        wp_localize_script(
+            LDJEM_PREFIX . '-offcanvas',
+            'ldjemOffcanvas',
+            [
+                'breakpoints' => $this->get_breakpoints(),
+            ]
+        );
+
         // Localize script with data
         wp_localize_script(
             LDJEM_PREFIX . '-frontend',

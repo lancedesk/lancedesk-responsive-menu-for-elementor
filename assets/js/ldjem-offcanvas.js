@@ -9,7 +9,30 @@
 (function ($) {
   'use strict';
 
-  window.__LDJEM_OFFCANVAS_BUILD = 'ldjem-offcanvas-2026-04-30-1812';
+  window.__LDJEM_OFFCANVAS_BUILD = 'ldjem-offcanvas-2026-07-10-1705';
+
+  function getBreakpoint(name, fallback) {
+    if (window.ldjemOffcanvas && window.ldjemOffcanvas.breakpoints && window.ldjemOffcanvas.breakpoints[name]) {
+      return parseInt(window.ldjemOffcanvas.breakpoints[name], 10);
+    }
+    if (window.ldjemFrontend && window.ldjemFrontend.breakpoints && window.ldjemFrontend.breakpoints[name]) {
+      return parseInt(window.ldjemFrontend.breakpoints[name], 10);
+    }
+    return fallback;
+  }
+
+  function resolveDeviceFromWidth(width) {
+    const mobileMax = getBreakpoint('mobile', 767);
+    const tabletMax = getBreakpoint('tablet', 1024);
+
+    if (width <= mobileMax) {
+      return 'mobile';
+    }
+    if (width <= tabletMax) {
+      return 'tablet';
+    }
+    return 'desktop';
+  }
 
   /**
    * Off-Canvas Menu Handler
@@ -120,13 +143,7 @@
         return 'tablet';
       }
       const width = window.innerWidth || document.documentElement.clientWidth;
-      if (width <= 767) {
-        return 'mobile';
-      }
-      if (width <= 1024) {
-        return 'tablet';
-      }
-      return 'desktop';
+      return resolveDeviceFromWidth(width);
     }
 
     function isOffcanvasEnabledForCurrentDevice() {
@@ -262,6 +279,10 @@
 
       state.isOpen = true;
 
+      if (isEditorActive()) {
+        $wrapper.attr('data-ldjem-user-closed-preview', 'no');
+      }
+
       $offcanvas.addClass('is-open');
       $offcanvas.attr('aria-hidden', 'false');
       $hamburger.attr('aria-expanded', 'true');
@@ -307,6 +328,10 @@
       if (!state.isOpen) return;
 
       state.isOpen = false;
+
+      if (isEditorActive()) {
+        $wrapper.attr('data-ldjem-user-closed-preview', 'yes');
+      }
 
       $offcanvas.removeClass('is-open');
       $offcanvas.attr('aria-hidden', 'true');
@@ -390,9 +415,18 @@
       menuItemCount: $menuItems.length
     });
 
-    // Event: Close button click
-    $closeBtn.on('click.ldjem', function (e) {
+    // Event: Close button click (delegated for Elementor editor re-renders)
+    $(document).off('click.ldjem-close-' + widgetId);
+    $(document).on('click.ldjem-close-' + widgetId, `[data-ldjem-id="${widgetId}"] .ldjem-offcanvas-close`, function (e) {
       e.preventDefault();
+      e.stopPropagation();
+      closeMenu();
+    });
+
+    // Legacy direct binding fallback
+    $closeBtn.off('click.ldjem').on('click.ldjem', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
       closeMenu();
     });
 
@@ -815,13 +849,32 @@ if (window.jQuery) {
       });
       const widgetId = widgetIdClass ? widgetIdClass.replace('elementor-element-', '') : '';
       const hamburger = widget.querySelector('.ldjem-menu-wrapper-offcanvas .ldjem-hamburger-btn');
+      const closeButton = widget.querySelector('.ldjem-menu-wrapper-offcanvas .ldjem-offcanvas-close');
+      const x = evt.clientX;
+      const y = evt.clientY;
+
+      if (closeButton) {
+        const closeRect = closeButton.getBoundingClientRect();
+        const hitClose = x >= closeRect.left && x <= closeRect.right && y >= closeRect.top && y <= closeRect.bottom;
+        if (hitClose) {
+          evt.preventDefault();
+          evt.stopPropagation();
+          $(document).trigger('ldjem:offcanvas:overlay-bridge', [{
+            widgetId: widgetId,
+            source: 'elementor-overlay-close',
+            clickX: x,
+            clickY: y
+          }]);
+          closeButton.click();
+          return;
+        }
+      }
+
       if (!hamburger) {
         return;
       }
 
       const rect = hamburger.getBoundingClientRect();
-      const x = evt.clientX;
-      const y = evt.clientY;
       const hitHamburger = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
       if (!hitHamburger) {
         return;

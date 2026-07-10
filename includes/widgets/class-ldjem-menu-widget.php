@@ -93,17 +93,20 @@ class LDJEM_Menu_Widget extends Widget_Base {
         // Content Tab - Menu Selection
         $this->register_content_controls();
 
-        // Responsive Tab - Layout per device
+        // Display Mode - per-device Standard vs Off-Canvas (top of Content tab)
+        $this->register_display_mode_controls();
+
+        // Responsive layout for devices using Standard menu
         $this->register_responsive_controls();
 
-        // Off-Canvas Menu controls
+        // Off-Canvas Menu settings (when at least one device uses off-canvas)
         $this->register_offcanvas_controls();
 
-            // Preset & Configuration
-            $this->register_preset_controls();
-        
-            // Device-Specific Customization
-            $this->register_breakpoint_controls();
+        // Preset & Configuration
+        $this->register_preset_controls();
+
+        // Per-device off-canvas overrides (direction, animation, panel size)
+        $this->register_breakpoint_controls();
 
         // Style Tab - Menu Items
         $this->register_style_menu_items();
@@ -116,6 +119,265 @@ class LDJEM_Menu_Widget extends Widget_Base {
 
         // Advanced Tab - Extra settings
         $this->register_advanced_controls();
+    }
+
+    /**
+     * Conditions when off-canvas is enabled on at least one device.
+     *
+     * @return array<string, mixed>
+     */
+    private function get_offcanvas_active_conditions() {
+        return [
+            'relation' => 'and',
+            'terms'    => [
+                [
+                    'name'     => 'offcanvas_enable',
+                    'operator' => '===',
+                    'value'    => 'yes',
+                ],
+                [
+                    'relation' => 'or',
+                    'terms'    => [
+                        [
+                            'name'     => 'offcanvas_on_desktop',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                        [
+                            'name'     => 'offcanvas_on_tablet',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                        [
+                            'name'     => 'offcanvas_on_mobile',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Register display mode controls (master off-canvas toggle + per-device mode).
+     *
+     * @return void
+     */
+    private function register_display_mode_controls() {
+        $menu_options = LDJEM_Helpers::get_registered_menus();
+        if (empty($menu_options)) {
+            $menu_options = ['' => esc_html__('No menus available', 'lancedesk-responsive-menu-for-elementor')];
+        }
+
+        $this->start_controls_section(
+            'section_display_mode',
+            [
+                'label' => esc_html__('Display Mode', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'   => Controls_Manager::TAB_CONTENT,
+            ]
+        );
+
+        $this->add_control(
+            'display_mode_help',
+            [
+                'type'            => Controls_Manager::RAW_HTML,
+                'raw'             => esc_html__(
+                    'Choose Standard Menu or Off-Canvas for each screen size. Responsive Layout controls apply only to devices set to Standard. Off-Canvas settings appear when at least one device uses Off-Canvas.',
+                    'lancedesk-responsive-menu-for-elementor'
+                ),
+                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_enable',
+            [
+                'label'        => esc_html__('Enable Off-Canvas', 'lancedesk-responsive-menu-for-elementor'),
+                'type'         => Controls_Manager::SWITCHER,
+                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
+                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
+                'return_value' => 'yes',
+                'default'      => 'yes',
+                'description'  => esc_html__(
+                    'When disabled, all devices use the standard inline menu. Responsive Layout controls apply to every device.',
+                    'lancedesk-responsive-menu-for-elementor'
+                ),
+            ]
+        );
+
+        $device_mode_options = [
+            ''    => esc_html__('Standard Menu', 'lancedesk-responsive-menu-for-elementor'),
+            'yes' => esc_html__('Off-Canvas', 'lancedesk-responsive-menu-for-elementor'),
+        ];
+
+        $this->add_control(
+            'offcanvas_on_desktop',
+            [
+                'label'     => esc_html__('Desktop (>1024px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::SELECT,
+                'options'   => $device_mode_options,
+                'default'   => '',
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_on_tablet',
+            [
+                'label'     => esc_html__('Tablet (768–1024px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::SELECT,
+                'options'   => $device_mode_options,
+                'default'   => 'yes',
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_on_mobile',
+            [
+                'label'     => esc_html__('Mobile (<768px)', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::SELECT,
+                'options'   => $device_mode_options,
+                'default'   => 'yes',
+                'condition' => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'display_mode_all_offcanvas_tip',
+            [
+                'type'            => Controls_Manager::RAW_HTML,
+                'raw'             => esc_html__(
+                    'Tip: Set Desktop, Tablet, and Mobile to Off-Canvas to use the slide-out menu on every screen size.',
+                    'lancedesk-responsive-menu-for-elementor'
+                ),
+                'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
+                'conditions'      => $this->get_offcanvas_active_conditions(),
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_menus_heading',
+            [
+                'label'      => esc_html__('Off-Canvas Menus', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::HEADING,
+                'separator'  => 'before',
+                'conditions' => $this->get_offcanvas_active_conditions(),
+            ]
+        );
+
+        $this->add_control(
+            'use_offcanvas_device_specific_menus',
+            [
+                'label'        => esc_html__('Use Off-Canvas Specific Menus', 'lancedesk-responsive-menu-for-elementor'),
+                'type'         => Controls_Manager::SWITCHER,
+                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
+                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
+                'return_value' => 'yes',
+                'default'      => '',
+                'description'  => esc_html__(
+                    'When enabled, off-canvas can use different menus per device. Otherwise the main menu selection is used.',
+                    'lancedesk-responsive-menu-for-elementor'
+                ),
+                'conditions'   => $this->get_offcanvas_active_conditions(),
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_menu_id_desktop',
+            [
+                'label'       => esc_html__('Off-Canvas Desktop Menu', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SELECT,
+                'options'     => $menu_options,
+                'default'     => '',
+                'label_block' => true,
+                'conditions'  => [
+                    'relation' => 'and',
+                    'terms'    => array_merge(
+                        $this->get_offcanvas_active_conditions()['terms'],
+                        [
+                            [
+                                'name'     => 'use_offcanvas_device_specific_menus',
+                                'operator' => '===',
+                                'value'    => 'yes',
+                            ],
+                            [
+                                'name'     => 'offcanvas_on_desktop',
+                                'operator' => '===',
+                                'value'    => 'yes',
+                            ],
+                        ]
+                    ),
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_menu_id_tablet',
+            [
+                'label'       => esc_html__('Off-Canvas Tablet Menu', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SELECT,
+                'options'     => $menu_options,
+                'default'     => '',
+                'label_block' => true,
+                'conditions'  => [
+                    'relation' => 'and',
+                    'terms'    => array_merge(
+                        $this->get_offcanvas_active_conditions()['terms'],
+                        [
+                            [
+                                'name'     => 'use_offcanvas_device_specific_menus',
+                                'operator' => '===',
+                                'value'    => 'yes',
+                            ],
+                            [
+                                'name'     => 'offcanvas_on_tablet',
+                                'operator' => '===',
+                                'value'    => 'yes',
+                            ],
+                        ]
+                    ),
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'offcanvas_menu_id_mobile',
+            [
+                'label'       => esc_html__('Off-Canvas Mobile Menu', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SELECT,
+                'options'     => $menu_options,
+                'default'     => '',
+                'label_block' => true,
+                'conditions'  => [
+                    'relation' => 'and',
+                    'terms'    => array_merge(
+                        $this->get_offcanvas_active_conditions()['terms'],
+                        [
+                            [
+                                'name'     => 'use_offcanvas_device_specific_menus',
+                                'operator' => '===',
+                                'value'    => 'yes',
+                            ],
+                            [
+                                'name'     => 'offcanvas_on_mobile',
+                                'operator' => '===',
+                                'value'    => 'yes',
+                            ],
+                        ]
+                    ),
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
     }
 
     /**
@@ -205,100 +467,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
             ]
         );
 
-        $this->add_control(
-            'use_offcanvas_device_specific_menus',
-            [
-                'label'        => esc_html__('Use Off-Canvas Specific Menus', 'lancedesk-responsive-menu-for-elementor'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
-                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
-                'return_value' => 'yes',
-                'default'      => '',
-                'description'  => esc_html__('When enabled, off-canvas can use different menus per device.', 'lancedesk-responsive-menu-for-elementor'),
-                'condition'    => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_menu_id_desktop',
-            [
-                'label'       => esc_html__('Off-Canvas Desktop Menu', 'lancedesk-responsive-menu-for-elementor'),
-                'type'        => Controls_Manager::SELECT,
-                'options'     => $menu_options,
-                'default'     => '',
-                'label_block' => true,
-                'conditions'  => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'use_offcanvas_device_specific_menus',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_menu_id_tablet',
-            [
-                'label'       => esc_html__('Off-Canvas Tablet Menu', 'lancedesk-responsive-menu-for-elementor'),
-                'type'        => Controls_Manager::SELECT,
-                'options'     => $menu_options,
-                'default'     => '',
-                'label_block' => true,
-                'conditions'  => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'use_offcanvas_device_specific_menus',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_menu_id_mobile',
-            [
-                'label'       => esc_html__('Off-Canvas Mobile Menu', 'lancedesk-responsive-menu-for-elementor'),
-                'type'        => Controls_Manager::SELECT,
-                'options'     => $menu_options,
-                'default'     => '',
-                'label_block' => true,
-                'conditions'  => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'use_offcanvas_device_specific_menus',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
         // Menu Depth
         $this->add_control(
             'menu_depth',
@@ -374,167 +542,14 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'responsive_status_heading',
-            [
-                'label'     => esc_html__('Device Off-Canvas Status', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::HEADING,
-                'separator' => 'before',
-            ]
-        );
-
-        $this->add_control(
-            'responsive_status_offcanvas_disabled',
+            'responsive_layout_help',
             [
                 'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Desktop: Standard | Tablet: Standard | Mobile: Standard', 'lancedesk-responsive-menu-for-elementor'),
+                'raw'             => esc_html__(
+                    'Configure inline menu layout for devices set to Standard Menu in Display Mode. Devices set to Off-Canvas use the Off-Canvas Menu section instead.',
+                    'lancedesk-responsive-menu-for-elementor'
+                ),
                 'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-                'condition'       => [
-                    'offcanvas_enable!' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'responsive_status_desktop_on',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Desktop: Off-Canvas', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
-                'conditions'      => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_desktop',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'responsive_status_desktop_off',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Desktop: Standard', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-                'conditions'      => [
-                    'relation' => 'or',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_desktop',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'responsive_status_tablet_on',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Tablet: Off-Canvas', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
-                'conditions'      => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_tablet',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'responsive_status_tablet_off',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Tablet: Standard', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-                'conditions'      => [
-                    'relation' => 'or',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_tablet',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'responsive_status_mobile_on',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Mobile: Off-Canvas', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
-                'conditions'      => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_mobile',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'responsive_status_mobile_off',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Mobile: Standard', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-                'conditions'      => [
-                    'relation' => 'or',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_mobile',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
             ]
         );
 
@@ -1607,11 +1622,9 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_offcanvas',
             [
-                'label'     => esc_html__('Off Canvas', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'       => Controls_Manager::TAB_STYLE,
-                'condition' => [
-                    'offcanvas_enable' => 'yes',
-                ],
+                'label'      => esc_html__('Off Canvas', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'        => Controls_Manager::TAB_STYLE,
+                'conditions' => $this->get_offcanvas_active_conditions(),
             ]
         );
 
@@ -1630,7 +1643,13 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#ffffff',
                 'selectors' => [
+                    '{{WRAPPER}} .ldjem-menu-wrapper-offcanvas' => '--ldjem-offcanvas-bg: {{VALUE}};',
                     '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-bg: {{VALUE}}; background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-header' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-menu-container' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-menu' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-footer' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-offcanvas-close-standalone-wrap' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -2724,20 +2743,9 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_offcanvas_menu',
             [
-                'label' => esc_html__('Off-Canvas Menu', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'   => Controls_Manager::TAB_CONTENT,
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_enable',
-            [
-                'label'        => esc_html__('Enable Off-Canvas Menu', 'lancedesk-responsive-menu-for-elementor'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
-                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
-                'return_value' => 'yes',
-                'default'      => 'yes',
+                'label'      => esc_html__('Off-Canvas Menu', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'        => Controls_Manager::TAB_CONTENT,
+                'conditions' => $this->get_offcanvas_active_conditions(),
             ]
         );
 
@@ -3052,10 +3060,11 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
                 'return_value' => 'yes',
                 'default'      => 'yes',
-                'condition'    => [
-                    'offcanvas_enable' => 'yes',
-                    'offcanvas_show_header' => 'yes',
-                ],
+                'description'  => esc_html__(
+                    'Works with or without the header. Use a contrasting close color if the header background is similar.',
+                    'lancedesk-responsive-menu-for-elementor'
+                ),
+                'conditions'   => $this->get_offcanvas_active_conditions(),
             ]
         );
 
@@ -3234,8 +3243,9 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_offcanvas_presets',
             [
-                'label' => esc_html__('Off-Canvas Presets', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'   => Controls_Manager::TAB_CONTENT,
+                'label'      => esc_html__('Off-Canvas Presets', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'        => Controls_Manager::TAB_CONTENT,
+                'conditions' => $this->get_offcanvas_active_conditions(),
             ]
         );
 
@@ -3252,9 +3262,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'options'     => $preset_options,
                 'default'     => 'none',
                 'description' => esc_html__('Choose a starting preset, then customize controls below.', 'lancedesk-responsive-menu-for-elementor'),
-                'condition'   => [
-                    'offcanvas_enable' => 'yes',
-                ],
             ]
         );
 
@@ -3269,7 +3276,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'default'      => 'yes',
                 'description'  => esc_html__('When enabled, selecting a preset will overwrite mapped off-canvas controls.', 'lancedesk-responsive-menu-for-elementor'),
                 'condition'    => [
-                    'offcanvas_enable' => 'yes',
                     'offcanvas_preset!' => 'none',
                 ],
             ]
@@ -3287,53 +3293,21 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_breakpoint_behavior',
             [
-                'label' => esc_html__('Off-Canvas by Device', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'   => Controls_Manager::TAB_CONTENT,
+                'label'      => esc_html__('Off-Canvas Device Overrides', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'        => Controls_Manager::TAB_CONTENT,
+                'conditions' => $this->get_offcanvas_active_conditions(),
             ]
         );
 
         $this->add_control(
-            'offcanvas_on_desktop',
+            'offcanvas_overrides_help',
             [
-                'label'        => esc_html__('Enable on Desktop', 'lancedesk-responsive-menu-for-elementor'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
-                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
-                'return_value' => 'yes',
-                'default'      => 'no',
-                'condition'    => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_on_tablet',
-            [
-                'label'        => esc_html__('Enable on Tablet', 'lancedesk-responsive-menu-for-elementor'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
-                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
-                'return_value' => 'yes',
-                'default'      => 'yes',
-                'condition'    => [
-                    'offcanvas_enable' => 'yes',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'offcanvas_on_mobile',
-            [
-                'label'        => esc_html__('Enable on Mobile', 'lancedesk-responsive-menu-for-elementor'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
-                'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
-                'return_value' => 'yes',
-                'default'      => 'yes',
-                'condition'    => [
-                    'offcanvas_enable' => 'yes',
-                ],
+                'type'            => Controls_Manager::RAW_HTML,
+                'raw'             => esc_html__(
+                    'Optional per-device overrides for slide direction, animation, and panel size. Leave inherit/default to use the global Off-Canvas Menu settings.',
+                    'lancedesk-responsive-menu-for-elementor'
+                ),
+                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
             ]
         );
 
@@ -3722,6 +3696,19 @@ class LDJEM_Menu_Widget extends Widget_Base {
             $container_classes[] = $custom_classes;
         }
 
+        $container_classes = $this->apply_standard_menu_suppression_classes($settings, $container_classes);
+        $all_offcanvas = $this->is_all_devices_offcanvas($settings);
+
+        if ($all_offcanvas && $this->should_render_offcanvas($settings)) {
+            $offcanvas_items = $this->pick_initial_menu_items($menu_sets['offcanvas'], $menu_items_map);
+            $this->render_offcanvas_layout($offcanvas_items, $settings, $menu_sets['offcanvas'], $menu_items_map);
+            $this->render_debug_output($settings);
+            $this->enqueue_widget_assets();
+            return;
+        }
+
+        $suppress_standard_menu = $all_offcanvas;
+
         // Get container tag
         $container_tag = sanitize_key($settings['container_tag']);
         if (!in_array($container_tag, ['nav', 'div', 'ul'], true)) {
@@ -3759,12 +3746,14 @@ class LDJEM_Menu_Widget extends Widget_Base {
             $this->render_hamburger_menu($settings);
         }
 
-        // Render menu items
-        printf(
-            '<ul class="ldjem-menu ldjem-menu-root">%s</ul>',
-            LDJEM_Security::sanitize_menu_markup($this->render_menu_items($menu_items, 0, $settings))
-        );
-        $this->render_standard_menu_templates($menu_sets['standard'], $menu_items_map, $settings);
+        // Render menu items (skip inline menu when every device uses off-canvas).
+        if (!$suppress_standard_menu) {
+            printf(
+                '<ul class="ldjem-menu ldjem-menu-root">%s</ul>',
+                LDJEM_Security::sanitize_menu_markup($this->render_menu_items($menu_items, 0, $settings))
+            );
+            $this->render_standard_menu_templates($menu_sets['standard'], $menu_items_map, $settings);
+        }
 
         // Close wrapper
         printf('</%s>', tag_escape($container_tag));
@@ -3775,12 +3764,99 @@ class LDJEM_Menu_Widget extends Widget_Base {
         }
 
         $this->render_debug_output($settings);
+        $this->enqueue_widget_assets();
+    }
 
-        // Enqueue frontend scripts
+    /**
+     * Enqueue widget frontend assets.
+     *
+     * @return void
+     */
+    private function enqueue_widget_assets() {
         wp_enqueue_script(LDJEM_PREFIX . '-frontend');
         wp_enqueue_style(LDJEM_PREFIX . '-frontend');
         wp_enqueue_script(LDJEM_PREFIX . '-offcanvas');
         wp_enqueue_style(LDJEM_PREFIX . '-offcanvas');
+    }
+
+    /**
+     * Build inline style attribute for off-canvas panel variables.
+     *
+     * @param array $settings Widget settings.
+     * @return string
+     */
+    private function build_offcanvas_panel_style_attr($settings, $include_surface_background = true) {
+        $animation_duration = !empty($settings['offcanvas_animation_duration']) ? intval($settings['offcanvas_animation_duration']) : 300;
+        $animation_easing = !empty($settings['offcanvas_animation_easing']) ? sanitize_key($settings['offcanvas_animation_easing']) : 'ease-in-out';
+        $z_index = !empty($settings['offcanvas_z_index']) ? intval($settings['offcanvas_z_index']) : 999;
+        $panel_size = !empty($settings['offcanvas_panel_size']['size']) ? intval($settings['offcanvas_panel_size']['size']) : 300;
+        $panel_height = !empty($settings['offcanvas_panel_height']['size']) ? intval($settings['offcanvas_panel_height']['size']) : 400;
+
+        if ($z_index < 100) {
+            $z_index = 100;
+        }
+
+        $parts = [
+            sprintf('--ldjem-offcanvas-animation-speed: %dms', intval($animation_duration)),
+            sprintf('--ldjem-offcanvas-easing: %s', esc_attr($animation_easing)),
+            sprintf('--ldjem-offcanvas-z-index: %d', intval($z_index)),
+            sprintf('--ldjem-offcanvas-panel-size: %dpx', intval($panel_size)),
+            sprintf('--ldjem-offcanvas-panel-height: %dpx', intval($panel_height)),
+        ];
+
+        if (!empty($settings['offcanvas_bg_color'])) {
+            $panel_bg = $this->sanitize_css_color_value($settings['offcanvas_bg_color']);
+            if ($panel_bg) {
+                $parts[] = '--ldjem-offcanvas-bg: ' . $panel_bg;
+                if ($include_surface_background) {
+                    $parts[] = 'background-color: ' . $panel_bg;
+                }
+            }
+        }
+
+        if (!empty($settings['offcanvas_close_btn_color'])) {
+            $close_color = $this->sanitize_css_color_value($settings['offcanvas_close_btn_color']);
+            if ($close_color) {
+                $parts[] = '--ldjem-close-btn-color: ' . $close_color;
+            }
+        }
+
+        if (!empty($settings['offcanvas_close_btn_bg'])) {
+            $close_bg = $this->sanitize_css_color_value($settings['offcanvas_close_btn_bg']);
+            if ($close_bg) {
+                $parts[] = '--ldjem-close-btn-bg: ' . $close_bg;
+            }
+        }
+
+        return implode('; ', $parts);
+    }
+
+    /**
+     * Sanitize a CSS color for inline styles (hex, rgb/a, CSS variables).
+     *
+     * @param string $color Raw color value.
+     * @return string
+     */
+    private function sanitize_css_color_value($color) {
+        $color = trim((string) $color);
+        if ($color === '') {
+            return '';
+        }
+
+        if (0 === strpos($color, 'var(')) {
+            return preg_match('/^var\(--[a-zA-Z0-9\-_]+\)$/', $color) ? $color : '';
+        }
+
+        $hex = sanitize_hex_color($color);
+        if ($hex) {
+            return $hex;
+        }
+
+        if (preg_match('/^rgba?\(\s*[\d.\s%,]+\s*\)$/i', $color)) {
+            return $color;
+        }
+
+        return '';
     }
 
     /**
@@ -4247,8 +4323,11 @@ JS;
             $submenu_trigger = 'click';
         }
 
+        $wrapper_style = $this->build_offcanvas_panel_style_attr($settings, false);
+        $panel_style = $this->build_offcanvas_panel_style_attr($settings, true);
+
         printf(
-            '<div class="ldjem-menu-wrapper ldjem-menu-wrapper-offcanvas" data-ldjem-id="%1$s" data-ldjem-offcanvas="true" data-offcanvas-desktop="%2$s" data-offcanvas-tablet="%3$s" data-offcanvas-mobile="%4$s" data-direction-desktop="%5$s" data-direction-tablet="%6$s" data-direction-mobile="%7$s" data-animation-duration-desktop="%8$d" data-animation-duration-tablet="%9$d" data-animation-duration-mobile="%10$d" data-panel-size-desktop="%11$d" data-panel-size-tablet="%12$d" data-panel-size-mobile="%13$d" data-panel-height-desktop="%14$d" data-panel-height-tablet="%15$d" data-panel-height-mobile="%16$d" data-desktop-layout="%17$s" data-tablet-layout="%18$s" data-mobile-layout="%19$s" data-menu-id-desktop="%20$d" data-menu-id-tablet="%21$d" data-menu-id-mobile="%22$d" data-submenu-trigger="%23$s" data-submenu-accordion="%24$s">',
+            '<div class="ldjem-menu-wrapper ldjem-menu-wrapper-offcanvas" data-ldjem-id="%1$s" data-ldjem-offcanvas="true" data-offcanvas-desktop="%2$s" data-offcanvas-tablet="%3$s" data-offcanvas-mobile="%4$s" data-direction-desktop="%5$s" data-direction-tablet="%6$s" data-direction-mobile="%7$s" data-animation-duration-desktop="%8$d" data-animation-duration-tablet="%9$d" data-animation-duration-mobile="%10$d" data-panel-size-desktop="%11$d" data-panel-size-tablet="%12$d" data-panel-size-mobile="%13$d" data-panel-height-desktop="%14$d" data-panel-height-tablet="%15$d" data-panel-height-mobile="%16$d" data-desktop-layout="%17$s" data-tablet-layout="%18$s" data-mobile-layout="%19$s" data-menu-id-desktop="%20$d" data-menu-id-tablet="%21$d" data-menu-id-mobile="%22$d" data-submenu-trigger="%23$s" data-submenu-accordion="%24$s" style="%25$s">',
             esc_attr($widget_id),
             esc_attr($offcanvas_on_desktop),
             esc_attr($offcanvas_on_tablet),
@@ -4272,26 +4351,28 @@ JS;
             !empty($offcanvas_menu_ids['tablet']) ? intval($offcanvas_menu_ids['tablet']) : 0,
             !empty($offcanvas_menu_ids['mobile']) ? intval($offcanvas_menu_ids['mobile']) : 0,
             esc_attr($submenu_trigger),
-            esc_attr($submenu_accordion)
+            esc_attr($submenu_accordion),
+            esc_attr($wrapper_style)
         );
 
         $this->render_hamburger_menu($settings);
 
         printf(
-            '<div class="ldjem-offcanvas-wrapper direction-%1$s" data-ldjem-id="%2$s" role="dialog" aria-modal="true" aria-hidden="true" aria-label="%3$s" style="--ldjem-offcanvas-animation-speed: %4$dms; --ldjem-offcanvas-easing: %5$s; --ldjem-offcanvas-z-index: %6$d; --ldjem-offcanvas-panel-size: %7$dpx; --ldjem-offcanvas-panel-height: %8$dpx;">',
+            '<div class="ldjem-offcanvas-wrapper direction-%1$s" data-ldjem-id="%2$s" role="dialog" aria-modal="true" aria-hidden="true" aria-label="%3$s" style="%4$s">',
             esc_attr($direction),
             esc_attr($widget_id),
             esc_attr__('Main Menu', 'lancedesk-responsive-menu-for-elementor'),
-            intval($animation_duration),
-            esc_attr($animation_easing),
-            intval($z_index),
-            intval($panel_size),
-            intval($panel_height)
+            esc_attr($panel_style)
         );
 
         if (!empty($settings['offcanvas_show_header']) && 'yes' === $settings['offcanvas_show_header']) {
             echo '<div class="ldjem-offcanvas-header">';
             $this->render_offcanvas_header($settings);
+            $this->render_offcanvas_close_button($settings);
+            echo '</div>';
+        } elseif (!empty($settings['offcanvas_show_close_btn']) && 'yes' === $settings['offcanvas_show_close_btn']) {
+            echo '<div class="ldjem-offcanvas-close-standalone-wrap">';
+            $this->render_offcanvas_close_button($settings);
             echo '</div>';
         }
 
@@ -4332,19 +4413,111 @@ JS;
             return false;
         }
 
-        $device_settings = [
-            'offcanvas_on_desktop',
-            'offcanvas_on_tablet',
-            'offcanvas_on_mobile',
-        ];
-
-        foreach ($device_settings as $device_setting) {
-            if (!empty($settings[$device_setting]) && 'yes' === $settings[$device_setting]) {
+        foreach (['desktop', 'tablet', 'mobile'] as $device) {
+            if ($this->is_device_offcanvas_enabled($settings, $device)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Whether off-canvas is enabled for a specific device.
+     *
+     * @param array  $settings Widget settings.
+     * @param string $device   desktop|tablet|mobile
+     * @return bool
+     */
+    private function is_device_offcanvas_enabled($settings, $device) {
+        if (empty($settings['offcanvas_enable']) || 'yes' !== $settings['offcanvas_enable']) {
+            return false;
+        }
+
+        $key = 'offcanvas_on_' . sanitize_key($device);
+        return !empty($settings[$key]) && 'yes' === $settings[$key];
+    }
+
+    /**
+     * Whether every breakpoint uses off-canvas.
+     *
+     * @param array $settings Widget settings.
+     * @return bool
+     */
+    private function is_all_devices_offcanvas($settings) {
+        return $this->is_device_offcanvas_enabled($settings, 'desktop')
+            && $this->is_device_offcanvas_enabled($settings, 'tablet')
+            && $this->is_device_offcanvas_enabled($settings, 'mobile');
+    }
+
+    /**
+     * Add CSS classes that suppress the standard menu per device.
+     *
+     * @param array $settings           Widget settings.
+     * @param array $container_classes  Existing wrapper classes.
+     * @return array
+     */
+    private function apply_standard_menu_suppression_classes($settings, $container_classes) {
+        if (!$this->should_render_offcanvas($settings)) {
+            return $container_classes;
+        }
+
+        if ($this->is_device_offcanvas_enabled($settings, 'desktop')) {
+            $container_classes[] = 'ldjem-offcanvas-replaces-desktop';
+        }
+        if ($this->is_device_offcanvas_enabled($settings, 'tablet')) {
+            $container_classes[] = 'ldjem-offcanvas-replaces-tablet';
+        }
+        if ($this->is_device_offcanvas_enabled($settings, 'mobile')) {
+            $container_classes[] = 'ldjem-offcanvas-replaces-mobile';
+        }
+        if ($this->is_all_devices_offcanvas($settings)) {
+            $container_classes[] = 'ldjem-offcanvas-replaces-all';
+        }
+
+        return $container_classes;
+    }
+
+    /**
+     * Render off-canvas close button markup.
+     *
+     * @param array $settings Widget settings.
+     * @return void
+     */
+    private function render_offcanvas_close_button($settings) {
+        if (empty($settings['offcanvas_show_close_btn']) || 'yes' !== $settings['offcanvas_show_close_btn']) {
+            return;
+        }
+
+        $close_type = !empty($settings['offcanvas_close_icon_type']) ? sanitize_key($settings['offcanvas_close_icon_type']) : 'icon';
+        if (!in_array($close_type, ['icon', 'letter'], true)) {
+            $close_type = 'icon';
+        }
+
+        if ('letter' === $close_type) {
+            $letter = isset($settings['offcanvas_close_letter']) ? (string) $settings['offcanvas_close_letter'] : '×';
+            if ('' === trim($letter)) {
+                $letter = '×';
+            }
+
+            printf(
+                '<button class="ldjem-offcanvas-close ldjem-close-type-letter" type="button" aria-label="%1$s"><span class="ldjem-close-letter" aria-hidden="true">%2$s</span></button>',
+                esc_attr__('Close menu', 'lancedesk-responsive-menu-for-elementor'),
+                esc_html($letter)
+            );
+            return;
+        }
+
+        $close_icon = $this->resolve_offcanvas_close_icon_for_render($settings);
+
+        printf(
+            '<button class="ldjem-offcanvas-close ldjem-close-type-icon has-custom-icon" type="button" aria-label="%1$s">',
+            esc_attr__('Close menu', 'lancedesk-responsive-menu-for-elementor')
+        );
+
+        Icons_Manager::render_icon($close_icon, ['aria-hidden' => 'true']);
+
+        echo '</button>';
     }
 
     /**
@@ -4402,37 +4575,6 @@ JS;
             printf('<span class="ldjem-offcanvas-logo-text">%s</span>', esc_html($header_text));
         }
         echo '</div>';
-
-        if (!empty($settings['offcanvas_show_close_btn']) && 'yes' === $settings['offcanvas_show_close_btn']) {
-            $close_type = !empty($settings['offcanvas_close_icon_type']) ? sanitize_key($settings['offcanvas_close_icon_type']) : 'icon';
-            if (!in_array($close_type, ['icon', 'letter'], true)) {
-                $close_type = 'icon';
-            }
-
-            if ('letter' === $close_type) {
-                $letter = isset($settings['offcanvas_close_letter']) ? (string) $settings['offcanvas_close_letter'] : '×';
-                if ('' === trim($letter)) {
-                    $letter = '×';
-                }
-
-                printf(
-                    '<button class="ldjem-offcanvas-close ldjem-close-type-letter" type="button" aria-label="%1$s"><span class="ldjem-close-letter" aria-hidden="true">%2$s</span></button>',
-                    esc_attr__('Close menu', 'lancedesk-responsive-menu-for-elementor'),
-                    esc_html($letter)
-                );
-            } else {
-                $close_icon = $this->resolve_offcanvas_close_icon_for_render($settings);
-
-                printf(
-                    '<button class="ldjem-offcanvas-close ldjem-close-type-icon has-custom-icon" type="button" aria-label="%1$s">',
-                    esc_attr__('Close menu', 'lancedesk-responsive-menu-for-elementor')
-                );
-
-                Icons_Manager::render_icon($close_icon, ['aria-hidden' => 'true']);
-
-                echo '</button>';
-            }
-        }
     }
 
     /**

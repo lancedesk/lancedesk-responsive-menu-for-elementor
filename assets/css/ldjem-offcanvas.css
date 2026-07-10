@@ -744,26 +744,79 @@ body.ldjem-offcanvas-open {
 /* Scoped hidden state for this component only */
 .ldjem-offcanvas-wrapper[aria-hidden="true"] {
   visibility: hidden;
+  pointer-events: none;
 }
 
-/* Fallback menu visibility matrix when off-canvas is device-disabled */
+.ldjem-offcanvas-wrapper.is-open,
+.ldjem-offcanvas-wrapper[aria-hidden="false"] {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ============================================================================
+   DEVICE VISIBILITY (data-attribute driven — no JS class required)
+   ============================================================================ */
+
+.ldjem-menu-wrapper-offcanvas {
+  background: transparent;
+}
+
 .ldjem-menu-wrapper-offcanvas .ldjem-menu-fallback {
   display: none !important;
 }
 
-.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device .ldjem-menu-fallback {
-  display: none !important;
+.ldjem-menu-wrapper-offcanvas .ldjem-hamburger {
+  display: none;
 }
 
+.ldjem-menu-wrapper-offcanvas .ldjem-offcanvas-wrapper {
+  display: block;
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="yes"] .ldjem-hamburger {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="no"] .ldjem-hamburger,
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="no"] .ldjem-offcanvas-wrapper {
+    display: none !important;
+  }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="yes"] .ldjem-hamburger {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="no"] .ldjem-hamburger,
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="no"] .ldjem-offcanvas-wrapper {
+    display: none !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="yes"] .ldjem-hamburger {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="no"] .ldjem-hamburger,
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="no"] .ldjem-offcanvas-wrapper {
+    display: none !important;
+  }
+}
+
+/* JS-enhanced state (optional refinement after init) */
 .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device:not(.ldjem-offcanvas-is-open) .ldjem-hamburger {
-  display: flex !important;
-}
-
-.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device .ldjem-offcanvas-wrapper {
-  display: block !important;
-}
-
-.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-disabled-device .ldjem-menu-fallback {
   display: flex !important;
 }
 
@@ -772,20 +825,8 @@ body.ldjem-offcanvas-open {
   display: none !important;
 }
 
-/* Mobile preview hard-override: keep hamburger visible when off-canvas is enabled but closed */
-@media (max-width: 767px) {
-  .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger,
-  html.elementor-device-mobile .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger,
-  body.elementor-device-mobile .ldjem-menu-wrapper-offcanvas:not(.ldjem-offcanvas-is-open)[data-offcanvas-mobile="yes"] .ldjem-hamburger {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-}
-
 /* Off-canvas hamburger visual styles (fallback bars + icon) */
 .ldjem-menu-wrapper-offcanvas .ldjem-hamburger {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -842,49 +883,32 @@ body.ldjem-offcanvas-open .ldjem-menu-wrapper-offcanvas[data-ldjem-editor-previe
   display: none !important;
 }
 
-@media (min-width: 1025px) {
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="no"] .ldjem-menu-fallback {
-    display: flex;
-  }
-
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="no"] .ldjem-hamburger,
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-desktop="no"] .ldjem-offcanvas-wrapper {
-    display: none !important;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="no"] .ldjem-menu-fallback {
-    display: flex;
-  }
-
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="no"] .ldjem-hamburger,
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-tablet="no"] .ldjem-offcanvas-wrapper {
-    display: none !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="no"] .ldjem-menu-fallback {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="no"] .ldjem-hamburger,
-  .ldjem-menu-wrapper-offcanvas[data-offcanvas-mobile="no"] .ldjem-offcanvas-wrapper {
-    display: none !important;
-  }
-}
-
-/* Elementor editor preview: keep off-canvas panel visible on enabled devices */
-html.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-editor-preview-open .ldjem-offcanvas-wrapper,
-body.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-editor-preview-open .ldjem-offcanvas-wrapper,
-html.elementor-editor-active .ldjem-menu-wrapper-offcanvas[data-ldjem-editor-preview-open="yes"] .ldjem-offcanvas-wrapper,
-body.elementor-editor-active .ldjem-menu-wrapper-offcanvas[data-ldjem-editor-preview-open="yes"] .ldjem-offcanvas-wrapper {
+/* Elementor editor preview: keep off-canvas panel visible only while open */
+html.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open.ldjem-editor-preview-open .ldjem-offcanvas-wrapper,
+body.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open.ldjem-editor-preview-open .ldjem-offcanvas-wrapper,
+html.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open[data-ldjem-editor-preview-open="yes"] .ldjem-offcanvas-wrapper,
+body.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open[data-ldjem-editor-preview-open="yes"] .ldjem-offcanvas-wrapper {
   transform: none !important;
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
+}
+
+html.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open.ldjem-editor-preview-open .ldjem-offcanvas-close,
+body.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open.ldjem-editor-preview-open .ldjem-offcanvas-close,
+html.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open[data-ldjem-editor-preview-open="yes"] .ldjem-offcanvas-close,
+body.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open[data-ldjem-editor-preview-open="yes"] .ldjem-offcanvas-close {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+html.elementor-editor-active .ldjem-menu-wrapper-offcanvas[data-ldjem-user-closed-preview="yes"] .ldjem-offcanvas-wrapper,
+body.elementor-editor-active .ldjem-menu-wrapper-offcanvas[data-ldjem-user-closed-preview="yes"] .ldjem-offcanvas-wrapper {
+  transform: translateX(-100%) !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* Elementor device preview support */
@@ -924,6 +948,20 @@ html.elementor-device-desktop .ldjem-menu-wrapper-offcanvas[data-offcanvas-deskt
   display: flex !important;
 }
 
+/* Hide standard menu when off-canvas replaces all devices (no JS required). */
+.ldjem-menu-wrapper.ldjem-offcanvas-replaces-all {
+  display: none !important;
+}
+
+.ldjem-offcanvas-close-standalone-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 12px 16px 0;
+  flex-shrink: 0;
+  background-color: var(--ldjem-offcanvas-bg, #ffffff);
+}
+
 /* Hide standard menu only for the currently active off-canvas device. */
 .ldjem-menu-wrapper.ldjem-offcanvas-hide-standard {
   display: none !important;
@@ -931,18 +969,21 @@ html.elementor-device-desktop .ldjem-menu-wrapper-offcanvas[data-offcanvas-deskt
 
 /* Prevent first-load flash of standard menu before JS sync. */
 @media (min-width: 1025px) {
+  .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas).ldjem-offcanvas-replaces-desktop,
   .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas)[data-offcanvas-enabled="yes"][data-offcanvas-desktop="yes"] {
     display: none !important;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
+  .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas).ldjem-offcanvas-replaces-tablet,
   .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas)[data-offcanvas-enabled="yes"][data-offcanvas-tablet="yes"] {
     display: none !important;
   }
 }
 
 @media (max-width: 767px) {
+  .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas).ldjem-offcanvas-replaces-mobile,
   .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas)[data-offcanvas-enabled="yes"][data-offcanvas-mobile="yes"] {
     display: none !important;
   }

@@ -115,7 +115,7 @@ class LDJEM_Presets {
                 
                 // Device behavior
                 'offcanvas_on_tablet' => 'yes',
-                'offcanvas_on_desktop' => 'no',
+                'offcanvas_on_desktop' => '',
                 'offcanvas_on_mobile' => 'yes',
                 'offcanvas_direction_desktop' => 'inherit',
                 'offcanvas_direction_tablet' => 'inherit',
@@ -168,7 +168,7 @@ class LDJEM_Presets {
                 
                 // Device behavior
                 'offcanvas_on_tablet' => 'yes',
-                'offcanvas_on_desktop' => 'no',
+                'offcanvas_on_desktop' => '',
                 'offcanvas_on_mobile' => 'yes',
                 'offcanvas_direction_desktop' => 'inherit',
                 'offcanvas_direction_tablet' => 'right',
@@ -213,7 +213,7 @@ class LDJEM_Presets {
                 
                 // Device behavior
                 'offcanvas_on_tablet' => 'yes',
-                'offcanvas_on_desktop' => 'no',
+                'offcanvas_on_desktop' => '',
                 'offcanvas_on_mobile' => 'yes',
                 'offcanvas_direction_desktop' => 'inherit',
                 'offcanvas_direction_tablet' => 'top',
@@ -266,7 +266,7 @@ class LDJEM_Presets {
                 
                 // Device behavior
                 'offcanvas_on_tablet' => 'no',
-                'offcanvas_on_desktop' => 'no',
+                'offcanvas_on_desktop' => '',
                 'offcanvas_on_mobile' => 'yes',
                 'offcanvas_direction_desktop' => 'inherit',
                 'offcanvas_direction_tablet' => 'inherit',

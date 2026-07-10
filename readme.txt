@@ -2,9 +2,9 @@
 Contributors: lancedesk
 Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,18 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 
 == Changelog ==
 
+= 1.0.11 =
+* Reorganize widget controls: new Display Mode section at the top with per-device Standard Menu / Off-Canvas selectors.
+* Hide Off-Canvas content and style controls when no device uses off-canvas.
+* Fix close button not rendering unless the off-canvas header was enabled.
+* Fix standard horizontal menu still appearing on the frontend when all devices use off-canvas.
+* Fix off-canvas toggle visibility on desktop frontend (CSS no longer requires JavaScript classes).
+* Fix panel background and close color applying reliably via inline styles and broader selectors.
+* Fix Elementor editor close button not dismissing the preview panel.
+* Fix panel colors when Elementor uses rgb/rgba or CSS variable values.
+* Fix panel background incorrectly painting the hamburger row wrapper on the frontend.
+* Declare WordPress 7.0 compatibility (Tested up to: 7.0).
+
 = 1.0.10 =
 * Add close button type toggle: Elementor icon or custom letter/character.
 * Fix close button style controls updating live in the Elementor editor (size, radius, border, weight, stroke).
@@ -128,6 +140,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.11 =
+Clearer Display Mode controls per device, smarter off-canvas field visibility, and WordPress 7.0 compatibility.
 
 = 1.0.10 =
 Recommended update for close button icon/letter controls, live editor preview fixes, and mobile off-canvas styling.
