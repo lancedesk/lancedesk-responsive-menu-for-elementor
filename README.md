@@ -2,7 +2,7 @@
 
 Responsive Elementor menu widget for WordPress with per-device layout controls, flexible submenu triggers, and cleaner mobile navigation behavior.
 
-![Version](https://img.shields.io/badge/version-1.0.12-blue)
+![Version](https://img.shields.io/badge/version-1.0.13-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-green)
 ![WordPress](https://img.shields.io/badge/wordpress-5.0%2B-blue)
 ![PHP](https://img.shields.io/badge/php-7.4%2B-blue)
@@ -20,6 +20,7 @@ LanceDesk Responsive Menu for Elementor is designed for modern WordPress builds 
 - Single widget instance for responsive WordPress navigation menus
 - Device-aware layout control: horizontal, vertical, grid
 - Submenu trigger modes: `Hover`, `Click`, `Hover & Click`
+- Off-canvas submenu styles: **Drill-down** (push panels) or Accordion
 - Optional accordion behavior for nested submenu UX
 - Off-canvas support with device-level enable/disable rules
 - Device-specific menu selection for both standard and off-canvas modes
@@ -52,6 +53,13 @@ Clear, consistent navigation improves user experience and can support better eng
 4. Pick a WordPress menu and configure responsive layout behavior.
 
 ## Changelog
+
+### 1.0.13
+
+- Add off-canvas **Drill-down** submenu mode (push panels with Back)—default for new off-canvas menus
+- Keep Accordion as an optional off-canvas submenu style
+- Accordion mode now scrolls opened items into view when near the bottom of the drawer
+- Escape key steps back one drill level before closing the drawer
 
 ### 1.0.12
 

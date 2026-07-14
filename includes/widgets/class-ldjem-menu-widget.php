@@ -517,7 +517,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'label_off'    => esc_html__('Off', 'lancedesk-responsive-menu-for-elementor'),
                 'return_value' => 'yes',
                 'default'      => 'yes',
-                'description'  => esc_html__('When enabled, opening one submenu closes sibling submenus at the same level.', 'lancedesk-responsive-menu-for-elementor'),
+                'description'  => esc_html__('When enabled, opening one submenu closes sibling submenus at the same level (standard menus, and off-canvas when set to Accordion).', 'lancedesk-responsive-menu-for-elementor'),
             ]
         );
 
@@ -2742,6 +2742,23 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
+            'offcanvas_submenu_mode',
+            [
+                'label'       => esc_html__('Submenu Style', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SELECT,
+                'options'     => [
+                    'drilldown' => esc_html__('Drill-down (push panels)', 'lancedesk-responsive-menu-for-elementor'),
+                    'accordion' => esc_html__('Accordion (expand in place)', 'lancedesk-responsive-menu-for-elementor'),
+                ],
+                'default'     => 'drilldown',
+                'description' => esc_html__('Drill-down opens each submenu as a full panel with a Back control—best for deep menus. Accordion expands items in place.', 'lancedesk-responsive-menu-for-elementor'),
+                'condition'   => [
+                    'offcanvas_enable' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
             'offcanvas_animation_duration',
             [
                 'label'     => esc_html__('Animation Duration (ms)', 'lancedesk-responsive-menu-for-elementor'),
@@ -4273,15 +4290,19 @@ JS;
 
         $submenu_trigger = !empty($settings['submenu_trigger']) ? sanitize_key($settings['submenu_trigger']) : 'click';
         $submenu_accordion = (!empty($settings['submenu_accordion']) && 'yes' === $settings['submenu_accordion']) ? 'yes' : 'no';
+        $offcanvas_submenu_mode = !empty($settings['offcanvas_submenu_mode']) ? sanitize_key($settings['offcanvas_submenu_mode']) : 'drilldown';
         if (!in_array($submenu_trigger, ['hover', 'click', 'hover_click'], true)) {
             $submenu_trigger = 'click';
+        }
+        if (!in_array($offcanvas_submenu_mode, ['drilldown', 'accordion'], true)) {
+            $offcanvas_submenu_mode = 'drilldown';
         }
 
         $wrapper_style = $this->build_offcanvas_panel_style_attr($settings, false);
         $panel_style = $this->build_offcanvas_panel_style_attr($settings, true);
 
         printf(
-            '<div class="ldjem-menu-wrapper ldjem-menu-wrapper-offcanvas" data-ldjem-id="%1$s" data-ldjem-offcanvas="true" data-offcanvas-desktop="%2$s" data-offcanvas-tablet="%3$s" data-offcanvas-mobile="%4$s" data-direction-desktop="%5$s" data-direction-tablet="%6$s" data-direction-mobile="%7$s" data-animation-duration-desktop="%8$d" data-animation-duration-tablet="%9$d" data-animation-duration-mobile="%10$d" data-panel-size-desktop="%11$d" data-panel-size-tablet="%12$d" data-panel-size-mobile="%13$d" data-panel-height-desktop="%14$d" data-panel-height-tablet="%15$d" data-panel-height-mobile="%16$d" data-desktop-layout="%17$s" data-tablet-layout="%18$s" data-mobile-layout="%19$s" data-menu-id-desktop="%20$d" data-menu-id-tablet="%21$d" data-menu-id-mobile="%22$d" data-submenu-trigger="%23$s" data-submenu-accordion="%24$s" style="%25$s">',
+            '<div class="ldjem-menu-wrapper ldjem-menu-wrapper-offcanvas" data-ldjem-id="%1$s" data-ldjem-offcanvas="true" data-offcanvas-desktop="%2$s" data-offcanvas-tablet="%3$s" data-offcanvas-mobile="%4$s" data-direction-desktop="%5$s" data-direction-tablet="%6$s" data-direction-mobile="%7$s" data-animation-duration-desktop="%8$d" data-animation-duration-tablet="%9$d" data-animation-duration-mobile="%10$d" data-panel-size-desktop="%11$d" data-panel-size-tablet="%12$d" data-panel-size-mobile="%13$d" data-panel-height-desktop="%14$d" data-panel-height-tablet="%15$d" data-panel-height-mobile="%16$d" data-desktop-layout="%17$s" data-tablet-layout="%18$s" data-mobile-layout="%19$s" data-menu-id-desktop="%20$d" data-menu-id-tablet="%21$d" data-menu-id-mobile="%22$d" data-submenu-trigger="%23$s" data-submenu-accordion="%24$s" data-offcanvas-submenu-mode="%25$s" style="%26$s">',
             esc_attr($widget_id),
             esc_attr($offcanvas_on_desktop),
             esc_attr($offcanvas_on_tablet),
@@ -4306,6 +4327,7 @@ JS;
             !empty($offcanvas_menu_ids['mobile']) ? intval($offcanvas_menu_ids['mobile']) : 0,
             esc_attr($submenu_trigger),
             esc_attr($submenu_accordion),
+            esc_attr($offcanvas_submenu_mode),
             esc_attr($wrapper_style)
         );
 
@@ -4692,6 +4714,17 @@ JS;
         return $html;
     }
 
+    /**
+     * Whether off-canvas submenus use drill-down panels.
+     *
+     * @param array $settings Widget settings.
+     * @return bool
+     */
+    private function is_offcanvas_drilldown_mode($settings) {
+        $mode = !empty($settings['offcanvas_submenu_mode']) ? sanitize_key($settings['offcanvas_submenu_mode']) : 'drilldown';
+        return 'drilldown' === $mode;
+    }
+
     private function render_offcanvas_menu_items($items, $level = 0, $settings = []) {
         if (empty($items)) {
             return '';
@@ -4741,11 +4774,29 @@ JS;
                 $html .= $this->render_submenu_toggle_markup($settings);
 
                 $animation_class = esc_attr($this->get_submenu_animation_class($settings));
+                $submenu_inner = '';
+
+                if ($this->is_offcanvas_drilldown_mode($settings)) {
+                    $submenu_inner .= sprintf(
+                        '<li class="ldjem-offcanvas-drill-back"><button type="button" class="ldjem-offcanvas-drill-back-btn" aria-label="%1$s"><span class="ldjem-offcanvas-drill-back-icon" aria-hidden="true">‹</span><span class="ldjem-offcanvas-drill-back-label">%2$s</span></button></li>',
+                        esc_attr(
+                            sprintf(
+                                /* translators: %s: parent menu item title */
+                                __('Back to %s', 'lancedesk-responsive-menu-for-elementor'),
+                                $item->title
+                            )
+                        ),
+                        esc_html($item->title)
+                    );
+                }
+
+                $submenu_inner .= $this->render_offcanvas_menu_items($item->children, $level + 1, $settings);
+
                 $html .= sprintf(
-                    '<ul class="ldjem-offcanvas-submenu ldjem-offcanvas-submenu-level-%1$d%2$s">%3$s</ul>',
+                    '<ul class="ldjem-offcanvas-submenu ldjem-offcanvas-submenu-level-%1$d%2$s" aria-hidden="true">%3$s</ul>',
                     intval($level + 1),
                     $animation_class ? ' ' . $animation_class : '',
-                    LDJEM_Security::sanitize_menu_markup($this->render_offcanvas_menu_items($item->children, $level + 1, $settings))
+                    LDJEM_Security::sanitize_menu_markup($submenu_inner)
                 );
             }
 

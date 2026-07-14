@@ -484,6 +484,164 @@ html.hb-a11y-dark .ldjem-offcanvas-logo-dual.ldjem-logo-dark-mode-accessibility 
 }
 
 /* ============================================================================
+   DRILL-DOWN SUBMENU PANELS
+   ============================================================================ */
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-container {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu {
+  position: static;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item {
+  position: static;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  opacity: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(100%);
+  transition: transform var(--ldjem-offcanvas-animation-speed, 300ms) var(--ldjem-offcanvas-easing, ease-in-out),
+    visibility 0s linear var(--ldjem-offcanvas-animation-speed, 300ms);
+  z-index: 2;
+  background-color: var(--ldjem-offcanvas-submenu-bg, var(--ldjem-offcanvas-bg, #ffffff));
+  border-left: none;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu.is-drill-panel-open {
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+  transition: transform var(--ldjem-offcanvas-animation-speed, 300ms) var(--ldjem-offcanvas-easing, ease-in-out),
+    visibility 0s linear 0s;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"].ldjem-offcanvas-is-drilled .ldjem-offcanvas-menu {
+  overflow: hidden;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.has-children > .ldjem-offcanvas-submenu,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.has-children > .ldjem-offcanvas-submenu {
+  flex: none;
+  width: 100%;
+  border-left: none;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item > a {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom-width: var(--ldjem-offcanvas-separator-width, 1px);
+  border-bottom-style: var(--ldjem-offcanvas-separator-style, solid);
+  border-bottom-color: var(--ldjem-offcanvas-separator-color, rgba(127, 127, 127, 0.25));
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 20px;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  color: var(--ldjem-offcanvas-link-color, inherit);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back-btn:hover {
+  background-color: var(--ldjem-offcanvas-link-hover-bg, transparent);
+  color: var(--ldjem-offcanvas-link-hover-color, inherit);
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back-btn:focus {
+  outline: 2px solid var(--ldjem-offcanvas-focus-color, #4A90E2);
+  outline-offset: -2px;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  font-size: 1.35em;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 600;
+}
+
+/* Point toggle chevrons right in drill-down (forward affordance) */
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle:empty::after,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle:empty::after {
+  content: '\203A';
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle i,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle svg,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.has-children > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle i,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle svg,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.has-children > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback {
+  transform: rotate(-90deg);
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.is-expanded > .ldjem-submenu-toggle i,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.is-expanded > .ldjem-submenu-toggle svg,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-menu-item.is-expanded > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.is-expanded > .ldjem-submenu-toggle i,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.is-expanded > .ldjem-submenu-toggle svg,
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu-item.is-expanded > .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback {
+  transform: rotate(-90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu,
+  .ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-submenu.is-drill-panel-open {
+    transition: none;
+  }
+}
+
+/* ============================================================================
    OFF-CANVAS FOOTER WITH SOCIAL ICONS
    ============================================================================ */
 

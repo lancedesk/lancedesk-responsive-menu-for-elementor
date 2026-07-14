@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,6 +21,7 @@ Instead of duplicating multiple menu widgets and hiding them per breakpoint, you
 * One Elementor menu widget across devices
 * Device-specific layout controls (desktop/tablet/mobile)
 * Submenu trigger options: Hover, Click, Hover & Click
+* Off-canvas submenu styles: Drill-down (push panels) or Accordion
 * Optional accordion behavior for cleaner submenu interaction
 * Off-canvas support with responsive controls and editor-preview reliability
 * Device-specific menu selection for standard and off-canvas modes
@@ -69,6 +70,12 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 5. Submenu styling and trigger options.
 
 == Changelog ==
+
+= 1.0.13 =
+* Add off-canvas Drill-down submenu mode (push panels with Back)—default for new off-canvas menus.
+* Keep Accordion as an optional off-canvas submenu style.
+* Accordion mode now scrolls opened items into view when near the bottom of the drawer.
+* Escape key steps back one drill level before closing the drawer.
 
 = 1.0.12 =
 * Add Toggle Alignment control (left, center, right) under Content > Off-Canvas Menu > Toggle.
@@ -145,6 +152,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.13 =
+Recommended update: off-canvas Drill-down submenus keep nested items visible near the bottom of the drawer.
 
 = 1.0.12 =
 Adds off-canvas toggle alignment control and removes the non-functional presets section.

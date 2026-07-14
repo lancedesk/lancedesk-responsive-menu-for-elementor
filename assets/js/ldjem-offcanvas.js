@@ -9,7 +9,7 @@
 (function ($) {
   'use strict';
 
-  window.__LDJEM_OFFCANVAS_BUILD = 'ldjem-offcanvas-2026-07-10-1705';
+  window.__LDJEM_OFFCANVAS_BUILD = 'ldjem-offcanvas-2026-07-14-drilldown';
 
   function getBreakpoint(name, fallback) {
     if (window.ldjemOffcanvas && window.ldjemOffcanvas.breakpoints && window.ldjemOffcanvas.breakpoints[name]) {
@@ -78,6 +78,7 @@
       widgetId: widgetId,
       settings: settings || {},
       focusTrap: null,
+      drillStack: [],
     };
 
     function logLayoutDebug(context, device, enabled) {
@@ -247,10 +248,98 @@
       $menuRoot.data('ldjemRenderedHtml', html);
       $wrapper.attr('data-active-offcanvas-menu-variant', variant);
       $wrapper.attr('data-active-offcanvas-menu-id', $template.attr('data-menu-id') || '');
+      resetDrilldown();
       emitDebug('offcanvas-menu-template-sync', {
         variant: variant,
         menuId: $template.attr('data-menu-id') || ''
       });
+    }
+
+    function isDrilldownMode() {
+      // Missing attr = legacy markup → keep accordion behavior.
+      return ($wrapper.attr('data-offcanvas-submenu-mode') || 'accordion') === 'drilldown';
+    }
+
+    function resetDrilldown() {
+      state.drillStack = [];
+      $offcanvas.find('.is-drill-panel-open').removeClass('is-drill-panel-open').css('z-index', '');
+      $offcanvas.find('.is-expanded').removeClass('is-expanded');
+      $offcanvas.find('.ldjem-submenu-toggle').attr('aria-expanded', 'false');
+      $offcanvas.find('.ldjem-offcanvas-submenu').attr('aria-hidden', 'true').css('max-height', '');
+      $offcanvas.removeClass('ldjem-offcanvas-is-drilled');
+      $wrapper.removeClass('ldjem-offcanvas-is-drilled');
+    }
+
+    function drillInto($parent, $toggleBtn) {
+      const $submenu = $parent.children('.ldjem-offcanvas-submenu');
+      if (!$submenu.length || $submenu.hasClass('is-drill-panel-open')) {
+        return;
+      }
+
+      const depth = state.drillStack.length + 1;
+      $parent.addClass('is-expanded');
+      if ($toggleBtn && $toggleBtn.length) {
+        $toggleBtn.attr('aria-expanded', 'true');
+      }
+      $submenu
+        .addClass('is-drill-panel-open')
+        .attr('aria-hidden', 'false')
+        .css('z-index', 10 + depth);
+
+      state.drillStack.push($submenu);
+      $offcanvas.addClass('ldjem-offcanvas-is-drilled');
+      $wrapper.addClass('ldjem-offcanvas-is-drilled');
+
+      const $backBtn = $submenu.children('.ldjem-offcanvas-drill-back').find('.ldjem-offcanvas-drill-back-btn').first();
+      window.requestAnimationFrame(function () {
+        if ($backBtn.length) {
+          $backBtn.focus();
+        } else {
+          const $firstLink = $submenu.find('> .ldjem-offcanvas-submenu-item > a').first();
+          if ($firstLink.length) {
+            $firstLink.focus();
+          }
+        }
+      });
+
+      $(document).trigger('ldjem:submenu:drilled', {
+        element: $toggleBtn,
+        depth: depth,
+        level: $parent.parents('.ldjem-offcanvas-submenu').length
+      });
+    }
+
+    function drillBack() {
+      if (!state.drillStack.length) {
+        return false;
+      }
+
+      const $submenu = state.drillStack.pop();
+      const $parent = $submenu.parent('li');
+      const $toggleBtn = $parent.children('.ldjem-submenu-toggle');
+
+      $submenu.removeClass('is-drill-panel-open').attr('aria-hidden', 'true').css('z-index', '');
+      $parent.removeClass('is-expanded');
+      $toggleBtn.attr('aria-expanded', 'false');
+
+      if (!state.drillStack.length) {
+        $offcanvas.removeClass('ldjem-offcanvas-is-drilled');
+        $wrapper.removeClass('ldjem-offcanvas-is-drilled');
+      }
+
+      window.requestAnimationFrame(function () {
+        if ($toggleBtn.length) {
+          $toggleBtn.focus();
+        } else {
+          $parent.children('a').first().focus();
+        }
+      });
+
+      $(document).trigger('ldjem:submenu:drillback', {
+        depth: state.drillStack.length
+      });
+
+      return true;
     }
 
     /**
@@ -349,6 +438,8 @@
       // Return focus to hamburger
       $hamburger.focus();
 
+      resetDrilldown();
+
       // Trigger custom event
       $(document).trigger('ldjem:offcanvas:closed', [widgetId]);
       $(document).trigger('ldjem:offcanvas:toggle-attempt', [{
@@ -423,6 +514,9 @@
       closeMenu();
     });
 
+    // Clear prior instance handlers before binding (Elementor force re-init)
+    $offcanvas.off('.ldjem');
+
     // Legacy direct binding fallback
     $closeBtn.off('click.ldjem').on('click.ldjem', function (e) {
       e.preventDefault();
@@ -430,11 +524,17 @@
       closeMenu();
     });
 
-    // Event: Escape key
+    // Event: Escape key — pop drill level first, then close drawer
+    $(document).off('keydown.ldjem-' + widgetId);
     $(document).on('keydown.ldjem-' + widgetId, function (e) {
-      if (e.key === 'Escape' && state.isOpen) {
-        closeMenu();
+      if (e.key !== 'Escape' || !state.isOpen) {
+        return;
       }
+      if (isDrilldownMode() && drillBack()) {
+        e.preventDefault();
+        return;
+      }
+      closeMenu();
     });
 
     // Event: Menu item click (close on navigation)
@@ -442,7 +542,32 @@
       closeMenu();
     });
 
+    // Drill-down: placeholder parent links (#) open the panel instead of navigating
+    $offcanvas.on('click.ldjem', '.ldjem-offcanvas-menu-item.has-children > a, .ldjem-offcanvas-submenu-item.has-children > a', function (e) {
+      if (!isDrilldownMode()) {
+        return;
+      }
+      const href = ($(this).attr('href') || '').trim();
+      const isPlaceholder = !href || href === '#' || href.indexOf('javascript:') === 0;
+      if (!isPlaceholder) {
+        return;
+      }
+      e.preventDefault();
+      const $parent = $(this).closest('li');
+      const $toggleBtn = $parent.children('.ldjem-submenu-toggle');
+      drillInto($parent, $toggleBtn);
+    });
+
     function toggleOffcanvasSubmenu($parent, $toggleBtn) {
+      if (isDrilldownMode()) {
+        if ($parent.hasClass('is-expanded') && $parent.children('.ldjem-offcanvas-submenu').hasClass('is-drill-panel-open')) {
+          // Already open as the active panel — ignore (back button handles return)
+          return;
+        }
+        drillInto($parent, $toggleBtn);
+        return;
+      }
+
       const isAccordion = ($wrapper.attr('data-submenu-accordion') || 'yes') === 'yes';
       const isCurrentlyExpanded = $parent.hasClass('is-expanded');
       const $submenu = $parent.children('.ldjem-offcanvas-submenu');
@@ -452,7 +577,7 @@
           const $sibling = $(this);
           $sibling.removeClass('is-expanded');
           $sibling.children('.ldjem-submenu-toggle').attr('aria-expanded', 'false');
-          $sibling.children('.ldjem-offcanvas-submenu').css('max-height', '');
+          $sibling.children('.ldjem-offcanvas-submenu').attr('aria-hidden', 'true').css('max-height', '');
         });
       }
 
@@ -461,8 +586,15 @@
       $toggleBtn.attr('aria-expanded', isExpanded ? 'true' : 'false');
 
       if ($submenu.length) {
+        $submenu.attr('aria-hidden', isExpanded ? 'false' : 'true');
         if (isExpanded) {
           $submenu.css('max-height', $submenu[0].scrollHeight + 'px');
+          // Keep bottom-of-drawer opens visible in accordion mode
+          window.requestAnimationFrame(function () {
+            if ($parent[0] && typeof $parent[0].scrollIntoView === 'function') {
+              $parent[0].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+          });
         } else {
           $submenu.css('max-height', '');
         }
@@ -485,11 +617,24 @@
       toggleOffcanvasSubmenu($parent, $toggleBtn);
     });
 
+    // Event: Drill-down back button
+    $(document).off('click.ldjem-offcanvas-drillback-' + widgetId);
+    $(document).on('click.ldjem-offcanvas-drillback-' + widgetId, `[data-ldjem-id="${widgetId}"] .ldjem-offcanvas-wrapper .ldjem-offcanvas-drill-back-btn`, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      drillBack();
+    });
+
     // Event: Keyboard navigation in menu - Enhanced for nested items
-    $offcanvas.on('keydown.ldjem', '.ldjem-offcanvas-menu-item a, .ldjem-offcanvas-submenu-item a, .ldjem-offcanvas-menu-item .ldjem-submenu-toggle, .ldjem-offcanvas-submenu-item .ldjem-submenu-toggle', function (e) {
+    $offcanvas.on('keydown.ldjem', '.ldjem-offcanvas-menu-item a, .ldjem-offcanvas-submenu-item a, .ldjem-offcanvas-menu-item .ldjem-submenu-toggle, .ldjem-offcanvas-submenu-item .ldjem-submenu-toggle, .ldjem-offcanvas-drill-back-btn', function (e) {
       const $this = $(this);
       const $parent = $this.closest('li');
-      const $allFocusableItems = $offcanvas.find('a[role], a:not([role="presentation"]), .ldjem-submenu-toggle');
+      const $activePanel = state.drillStack.length
+        ? state.drillStack[state.drillStack.length - 1]
+        : $offcanvas.find('.ldjem-offcanvas-menu').first();
+      const $allFocusableItems = isDrilldownMode()
+        ? $activePanel.find('a, .ldjem-submenu-toggle, .ldjem-offcanvas-drill-back-btn').filter(':visible')
+        : $offcanvas.find('a[role], a:not([role="presentation"]), .ldjem-submenu-toggle');
       const currentIndex = $allFocusableItems.index($this);
 
       switch (e.key) {
@@ -511,7 +656,9 @@
           e.preventDefault();
           if ($parent.hasClass('has-children')) {
             const $toggleBtn = $parent.children('.ldjem-submenu-toggle');
-            if (!$parent.hasClass('is-expanded')) {
+            if (isDrilldownMode()) {
+              drillInto($parent, $toggleBtn);
+            } else if (!$parent.hasClass('is-expanded')) {
               toggleOffcanvasSubmenu($parent, $toggleBtn);
             } else {
               const $firstChild = $parent.find('> .ldjem-offcanvas-submenu > li:first-child a');
@@ -524,7 +671,11 @@
 
         case 'ArrowLeft':
           e.preventDefault();
-          if ($parent.hasClass('has-children') && $parent.hasClass('is-expanded')) {
+          if (isDrilldownMode()) {
+            if ($this.hasClass('ldjem-offcanvas-drill-back-btn') || state.drillStack.length) {
+              drillBack();
+            }
+          } else if ($parent.hasClass('has-children') && $parent.hasClass('is-expanded')) {
             const $toggleBtn = $parent.children('.ldjem-submenu-toggle');
             toggleOffcanvasSubmenu($parent, $toggleBtn);
           } else {
@@ -537,7 +688,10 @@
 
         case 'Enter':
         case ' ':
-          if ($this.hasClass('ldjem-submenu-toggle')) {
+          if ($this.hasClass('ldjem-offcanvas-drill-back-btn')) {
+            e.preventDefault();
+            drillBack();
+          } else if ($this.hasClass('ldjem-submenu-toggle')) {
             e.preventDefault();
             toggleOffcanvasSubmenu($parent, $this);
           } else if ($parent.hasClass('has-children') && !$parent.hasClass('is-expanded')) {
@@ -685,6 +839,7 @@
       $hamburger.off('.ldjem');
       $(document).off('.ldjem-' + widgetId);
       $(document).off('click.ldjem-offcanvas-submenu-' + widgetId);
+      $(document).off('click.ldjem-offcanvas-drillback-' + widgetId);
     }
   };
 
