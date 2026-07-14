@@ -4778,7 +4778,7 @@ JS;
 
                 if ($this->is_offcanvas_drilldown_mode($settings)) {
                     $submenu_inner .= sprintf(
-                        '<li class="ldjem-offcanvas-drill-back"><button type="button" class="ldjem-offcanvas-drill-back-btn" aria-label="%1$s"><span class="ldjem-offcanvas-drill-back-icon" aria-hidden="true">‹</span><span class="ldjem-offcanvas-drill-back-label">%2$s</span></button></li>',
+                        '<li class="ldjem-offcanvas-drill-back"><button type="button" class="ldjem-offcanvas-drill-back-btn" aria-label="%1$s"><span class="ldjem-offcanvas-drill-back-icon" aria-hidden="true"></span><span class="ldjem-offcanvas-drill-back-label">%2$s</span></button></li>',
                         esc_attr(
                             sprintf(
                                 /* translators: %s: parent menu item title */

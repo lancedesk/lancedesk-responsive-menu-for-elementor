@@ -578,6 +578,7 @@ html.hb-a11y-dark .ldjem-offcanvas-logo-dual.ldjem-logo-dark-mode-accessibility 
   background: transparent;
   color: var(--ldjem-offcanvas-link-color, inherit);
   font: inherit;
+  line-height: 1.4;
   text-align: left;
   cursor: pointer;
   -webkit-appearance: none;
@@ -599,15 +600,30 @@ html.hb-a11y-dark .ldjem-offcanvas-logo-dual.ldjem-logo-dark-mode-accessibility 
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  font-size: 1.35em;
-  line-height: 1;
-  font-weight: 400;
+  align-self: center;
+  width: 0.85em;
+  height: 1.4em;
+  line-height: 0;
+}
+
+.ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back-icon::before {
+  content: '';
+  display: block;
+  box-sizing: border-box;
+  width: 0.42em;
+  height: 0.42em;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
 }
 
 .ldjem-menu-wrapper-offcanvas[data-offcanvas-submenu-mode="drilldown"] .ldjem-offcanvas-drill-back-label {
+  display: block;
   flex: 1 1 auto;
+  align-self: center;
   min-width: 0;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 /* Point toggle chevrons right in drill-down (forward affordance) */
