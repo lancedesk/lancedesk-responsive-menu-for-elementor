@@ -83,6 +83,18 @@ class LDJEM_Menu_Widget extends Widget_Base {
     }
 
     /**
+     * Opt out of Elementor Element Cache.
+     *
+     * Current-page classes (current-menu-item / is-active) depend on the
+     * request URL and must be rendered fresh on every page.
+     *
+     * @return bool
+     */
+    protected function is_dynamic_content(): bool {
+        return true;
+    }
+
+    /**
      * Register widget controls
      * 
      * Called by Elementor to register all widget settings panels
@@ -4898,10 +4910,10 @@ JS;
 
             // Add active class if current page
             if (!empty($settings['mark_active_item']) && 'yes' === $settings['mark_active_item']) {
-                if ($item->current) {
+                if (!empty($item->current)) {
                     $classes[] = 'current-menu-item';
                 }
-                if ($item->current_item_ancestor) {
+                if (!empty($item->current_item_ancestor)) {
                     $classes[] = 'current-menu-ancestor';
                 }
             }

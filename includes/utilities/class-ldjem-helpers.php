@@ -63,6 +63,11 @@ class LDJEM_Helpers {
             return [];
         }
 
+        // wp_get_nav_menu_items() does not mark the current page — that happens
+        // inside wp_nav_menu() via _wp_menu_item_classes_by_context(). Without
+        // this call, $item->current stays unset and active classes never render.
+        _wp_menu_item_classes_by_context($items);
+
         // Build hierarchical structure
         return self::build_menu_hierarchy($items, $depth, $start_level);
     }

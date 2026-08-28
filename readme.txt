@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.13
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,12 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 5. Submenu styling and trigger options.
 
 == Changelog ==
+
+= 1.0.15 =
+* Fix active/current menu highlighting: call _wp_menu_item_classes_by_context() after wp_get_nav_menu_items() so current-menu-item and WordPress menu classes are applied.
+
+= 1.0.14 =
+* Opt the menu widget out of Elementor Element Cache so current-page active classes render correctly on every request.
 
 = 1.0.13 =
 * Add off-canvas Drill-down submenu mode (push panels with Back)—default for new off-canvas menus.
@@ -152,6 +158,12 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.15 =
+Critical fix: current-page menu highlighting now works (WordPress current classes were never applied when fetching menu items directly).
+
+= 1.0.14 =
+Recommended update so the current-page menu highlight works when Elementor Element Cache is enabled.
 
 = 1.0.13 =
 Recommended update: off-canvas Drill-down submenus keep nested items visible near the bottom of the drawer.
