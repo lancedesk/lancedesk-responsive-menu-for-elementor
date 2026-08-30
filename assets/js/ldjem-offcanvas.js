@@ -9,7 +9,58 @@
 (function ($) {
   'use strict';
 
-  window.__LDJEM_OFFCANVAS_BUILD = 'ldjem-offcanvas-2026-07-14-drilldown';
+  window.__LDJEM_OFFCANVAS_BUILD = 'ldjem-offcanvas-2026-08-30-vvh-fill';
+
+  function syncVisualViewportHeight(target) {
+    var h = window.innerHeight || document.documentElement.clientHeight || 0;
+    if (window.visualViewport && window.visualViewport.height) {
+      h = Math.max(h, Math.round(window.visualViewport.height));
+    }
+    // Elementor mobile device mode: prefer the visible preview frame height.
+    try {
+      var frame = document.documentElement;
+      if (
+        frame &&
+        (frame.classList.contains('elementor-editor-active') ||
+          frame.classList.contains('elementor-device-mobile') ||
+          (document.body && document.body.classList.contains('elementor-editor-active')))
+      ) {
+        var rectH = Math.round((document.documentElement && document.documentElement.clientHeight) || 0);
+        if (rectH > 0) {
+          h = Math.max(h, rectH);
+        }
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    var value = (h > 0 ? h : 0) + 'px';
+    var nodes = target ? [target] : document.querySelectorAll('.ldjem-offcanvas-wrapper');
+    nodes.forEach(function (el) {
+      if (el && el.style) {
+        el.style.setProperty('--ldjem-vvh', value);
+      }
+    });
+    if (document.documentElement && document.documentElement.style) {
+      document.documentElement.style.setProperty('--ldjem-vvh', value);
+    }
+    return h;
+  }
+
+  function applyPanelFill($panel) {
+    if (!$panel || !$panel.length) {
+      return;
+    }
+    var el = $panel.get(0);
+    var h = syncVisualViewportHeight(el);
+    var offsetRaw = window.getComputedStyle(el).getPropertyValue('--ldjem-offcanvas-offset-top') || '0px';
+    var offset = parseFloat(offsetRaw) || 0;
+    var fill = Math.max(0, h - offset);
+    if (fill > 0 && ($panel.hasClass('direction-left') || $panel.hasClass('direction-right'))) {
+      el.style.setProperty('min-height', fill + 'px');
+      el.style.setProperty('bottom', '0px');
+      el.style.setProperty('height', 'auto');
+    }
+  }
 
   function getBreakpoint(name, fallback) {
     if (window.ldjemOffcanvas && window.ldjemOffcanvas.breakpoints && window.ldjemOffcanvas.breakpoints[name]) {
@@ -372,6 +423,9 @@
         $wrapper.attr('data-ldjem-user-closed-preview', 'no');
       }
 
+      syncVisualViewportHeight($offcanvas.get(0));
+      applyPanelFill($offcanvas);
+
       $offcanvas.addClass('is-open');
       $offcanvas.attr('aria-hidden', 'false');
       $hamburger.attr('aria-expanded', 'true');
@@ -382,6 +436,8 @@
         hamburgerAriaExpanded: $hamburger.attr('aria-expanded') || ''
       });
       setTimeout(function () {
+        syncVisualViewportHeight($offcanvas.get(0));
+        applyPanelFill($offcanvas);
         emitDebug('open-post-frame', {
           offcanvasHasOpenClass: $offcanvas.hasClass('is-open') ? 'yes' : 'no',
           offcanvasAriaHidden: $offcanvas.attr('aria-hidden') || '',
@@ -435,8 +491,20 @@
       // Restore body scroll
       $('body').removeClass('ldjem-offcanvas-open');
 
-      // Return focus to hamburger
-      $hamburger.focus();
+      // Return focus for keyboard users; blur on touch so Chrome/iOS does not leave a sticky ring.
+      var focusMode = 'hide_touch';
+      var $host = $wrapper.closest('.elementor-element');
+      if ($host.hasClass('ldjem-toggle-focus-show')) {
+        focusMode = 'show';
+      } else if ($host.hasClass('ldjem-toggle-focus-hide_all')) {
+        focusMode = 'hide_all';
+      }
+      var coarsePointer = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+      if (focusMode !== 'show' && coarsePointer) {
+        $hamburger.trigger('blur');
+      } else {
+        $hamburger.focus();
+      }
 
       resetDrilldown();
 
@@ -817,6 +885,10 @@
   $(window).on('resize.ldjem', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
+      syncVisualViewportHeight();
+      $('.ldjem-offcanvas-wrapper.is-open').each(function () {
+        applyPanelFill($(this));
+      });
       // Sync all off-canvas instances on resize
       $('.ldjem-offcanvas-wrapper').each(function () {
         const state = $(this).data('ldjem-offcanvas-state');
@@ -826,6 +898,14 @@
       });
     }, 250);
   });
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function () {
+      syncVisualViewportHeight();
+    });
+  }
+
+  syncVisualViewportHeight();
 
   /**
    * Destroy/cleanup off-canvas menu

@@ -37,8 +37,12 @@
 .ldjem-offcanvas-wrapper.direction-left {
   left: 0;
   top: var(--ldjem-offcanvas-offset-top, 0px);
+  bottom: 0;
   width: var(--ldjem-offcanvas-panel-size, 300px);
-  height: calc(100vh - var(--ldjem-offcanvas-offset-top, 0px));
+  height: auto;
+  min-height: calc(100vh - var(--ldjem-offcanvas-offset-top, 0px));
+  min-height: calc(100dvh - var(--ldjem-offcanvas-offset-top, 0px));
+  min-height: calc(var(--ldjem-vvh, 100dvh) - var(--ldjem-offcanvas-offset-top, 0px));
   max-width: 85vw;
   transform: translateX(-100%);
   transition: transform var(--ldjem-offcanvas-animation-speed, 300ms) var(--ldjem-offcanvas-easing, ease-in-out);
@@ -52,8 +56,12 @@
 .ldjem-offcanvas-wrapper.direction-right {
   right: 0;
   top: var(--ldjem-offcanvas-offset-top, 0px);
+  bottom: 0;
   width: var(--ldjem-offcanvas-panel-size, 300px);
-  height: calc(100vh - var(--ldjem-offcanvas-offset-top, 0px));
+  height: auto;
+  min-height: calc(100vh - var(--ldjem-offcanvas-offset-top, 0px));
+  min-height: calc(100dvh - var(--ldjem-offcanvas-offset-top, 0px));
+  min-height: calc(var(--ldjem-vvh, 100dvh) - var(--ldjem-offcanvas-offset-top, 0px));
   max-width: 85vw;
   transform: translateX(100%);
   transition: transform var(--ldjem-offcanvas-animation-speed, 300ms) var(--ldjem-offcanvas-easing, ease-in-out);
@@ -271,19 +279,23 @@ html.hb-a11y-dark .ldjem-offcanvas-logo-dual.ldjem-logo-dark-mode-accessibility 
    OFF-CANVAS MENU ITEMS (MAIN NAVIGATION)
    ============================================================================ */
 
+.ldjem-offcanvas-menu-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  background-color: inherit;
+  /* Stretch paint so panel bg never stops mid-screen when content is short */
+  display: flex;
+  flex-direction: column;
+}
+
 .ldjem-offcanvas-menu {
   list-style: none;
   margin: 0;
   padding: 0;
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-}
-
-.ldjem-offcanvas-menu-container {
-  flex: 1 1 auto;
-  min-height: 0;
   background-color: inherit;
 }
 
@@ -946,7 +958,8 @@ body.ldjem-offcanvas-open {
 }
 
 .ldjem-menu-wrapper-offcanvas .ldjem-offcanvas-wrapper {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Desktop */
@@ -1014,6 +1027,33 @@ body.ldjem-offcanvas-open {
   padding: 8px;
   z-index: 1001;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Toggle focus / tap ring — Style > Toggle (Hamburger) > Toggle focus / tap ring */
+.elementor-element.ldjem-toggle-focus-hide_touch .ldjem-hamburger,
+.elementor-element.ldjem-toggle-focus-hide_all .ldjem-hamburger {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.elementor-element.ldjem-toggle-focus-hide_touch .ldjem-hamburger:focus:not(:focus-visible),
+.elementor-element.ldjem-toggle-focus-hide_touch .ldjem-hamburger:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.elementor-element.ldjem-toggle-focus-hide_touch .ldjem-hamburger:focus-visible {
+  outline: 2px solid var(--ldjem-offcanvas-focus-color, currentColor);
+  outline-offset: 2px;
+}
+
+.elementor-element.ldjem-toggle-focus-hide_all .ldjem-hamburger:focus,
+.elementor-element.ldjem-toggle-focus-hide_all .ldjem-hamburger:focus-visible,
+.elementor-element.ldjem-toggle-focus-hide_all .ldjem-hamburger:active {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Hide toggle when panel is open; close button inside panel handles dismissal */
@@ -1068,6 +1108,25 @@ body.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-op
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
+}
+
+/*
+ * Editor device frames often use transforms, so position:fixed + 100vh
+ * can collapse to content height. Force a full visual fill while open.
+ */
+html.elementor-editor-active .ldjem-offcanvas-wrapper.direction-left.is-open,
+body.elementor-editor-active .ldjem-offcanvas-wrapper.direction-left.is-open,
+html.elementor-editor-active .ldjem-offcanvas-wrapper.direction-right.is-open,
+body.elementor-editor-active .ldjem-offcanvas-wrapper.direction-right.is-open,
+html.elementor-device-mobile .ldjem-offcanvas-wrapper.direction-left.is-open,
+body.elementor-device-mobile .ldjem-offcanvas-wrapper.direction-left.is-open,
+html.elementor-device-mobile .ldjem-offcanvas-wrapper.direction-right.is-open,
+body.elementor-device-mobile .ldjem-offcanvas-wrapper.direction-right.is-open {
+  top: var(--ldjem-offcanvas-offset-top, 0px) !important;
+  bottom: 0 !important;
+  height: auto !important;
+  min-height: calc(100% - var(--ldjem-offcanvas-offset-top, 0px)) !important;
+  min-height: calc(var(--ldjem-vvh, 100dvh) - var(--ldjem-offcanvas-offset-top, 0px)) !important;
 }
 
 html.elementor-editor-active .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-is-open.ldjem-editor-preview-open .ldjem-offcanvas-close,

@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.16
+Stable tag: 1.0.18
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,12 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 5. Submenu styling and trigger options.
 
 == Changelog ==
+
+= 1.0.18 =
+* Off-canvas: new Style control “Toggle focus / tap ring” (default hides Chrome/iOS click outline; keyboard focus optional).
+
+= 1.0.17 =
+* Off-canvas: fill to the bottom of the viewport in Elementor editor/device preview (flex column + visual viewport height), matching real devices.
 
 = 1.0.16 =
 * Declare WordPress 7.1 compatibility (Tested up to: 7.1).

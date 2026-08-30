@@ -1794,6 +1794,22 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
+            'hamburger_focus_ring',
+            [
+                'label'        => esc_html__('Toggle focus / tap ring', 'lancedesk-responsive-menu-for-elementor'),
+                'type'         => Controls_Manager::SELECT,
+                'default'      => 'hide_touch',
+                'options'      => [
+                    'hide_touch' => esc_html__('Hide on click/tap (keep keyboard)', 'lancedesk-responsive-menu-for-elementor'),
+                    'hide_all'   => esc_html__('Hide always', 'lancedesk-responsive-menu-for-elementor'),
+                    'show'       => esc_html__('Show browser default', 'lancedesk-responsive-menu-for-elementor'),
+                ],
+                'description'  => esc_html__('Stops the Chrome/iOS outline that appears after tapping the hamburger. Keyboard focus can still show when set to keep keyboard.', 'lancedesk-responsive-menu-for-elementor'),
+                'prefix_class' => 'ldjem-toggle-focus-',
+            ]
+        );
+
+        $this->add_control(
             'offcanvas_style_header_heading',
             [
                 'label'     => esc_html__('Header', 'lancedesk-responsive-menu-for-elementor'),
@@ -2860,7 +2876,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                     ],
                 ],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-offcanvas-wrapper.direction-left, {{WRAPPER}} .ldjem-offcanvas-wrapper.direction-right' => 'top: {{SIZE}}{{UNIT}}; height: calc(100vh - {{SIZE}}{{UNIT}});',
+                    '{{WRAPPER}} .ldjem-offcanvas-wrapper.direction-left, {{WRAPPER}} .ldjem-offcanvas-wrapper.direction-right' => 'top: {{SIZE}}{{UNIT}}; --ldjem-offcanvas-offset-top: {{SIZE}}{{UNIT}}; bottom: 0; height: auto; min-height: calc(100vh - {{SIZE}}{{UNIT}}); min-height: calc(100dvh - {{SIZE}}{{UNIT}}); min-height: calc(var(--ldjem-vvh, 100dvh) - {{SIZE}}{{UNIT}});',
                 ],
                 'condition'  => [
                     'offcanvas_enable' => 'yes',
