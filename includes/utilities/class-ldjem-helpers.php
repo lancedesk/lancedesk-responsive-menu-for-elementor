@@ -68,6 +68,14 @@ class LDJEM_Helpers {
         // this call, $item->current stays unset and active classes never render.
         _wp_menu_item_classes_by_context($items);
 
+        // wp_nav_menu() then runs wp_nav_menu_objects — WooCommerce hooks here to
+        // mark the shop page current on is_shop() (core only matches is_singular).
+        $menu_args = (object) [
+            'menu'  => $menu_id,
+            'depth' => $depth,
+        ];
+        $items = apply_filters('wp_nav_menu_objects', $items, $menu_args);
+
         // Build hierarchical structure
         return self::build_menu_hierarchy($items, $depth, $start_level);
     }

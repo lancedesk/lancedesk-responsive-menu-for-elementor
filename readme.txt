@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.18
+Stable tag: 1.0.19
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 5. Submenu styling and trigger options.
 
 == Changelog ==
+
+= 1.0.19 =
+* Fix WooCommerce shop (and other wp_nav_menu_objects integrations) not receiving current-menu-item: run the same filter chain as wp_nav_menu() after _wp_menu_item_classes_by_context().
 
 = 1.0.18 =
 * Off-canvas: new Style control “Toggle focus / tap ring” (default hides Chrome/iOS click outline; keyboard focus optional).
