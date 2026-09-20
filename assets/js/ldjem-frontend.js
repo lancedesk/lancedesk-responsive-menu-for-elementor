@@ -171,18 +171,28 @@
                 hasClassToken(topDoc, 'elementor-device-tablet') ||
                 hasClassToken(topDoc, 'elementor-editor-device-tablet');
 
-            if (window.elementorFrontend && typeof window.elementorFrontend.getCurrentDeviceMode === 'function') {
-                var mode = window.elementorFrontend.getCurrentDeviceMode();
-                if (mode === 'mobile' || mode === 'tablet' || mode === 'desktop') {
-                    return mode;
-                }
-            }
+            var hasDesktopClass =
+                hasClassToken(document, 'elementor-device-desktop') ||
+                hasClassToken(document, 'elementor-editor-device-desktop') ||
+                hasClassToken(topDoc, 'elementor-device-desktop') ||
+                hasClassToken(topDoc, 'elementor-editor-device-desktop');
 
+            // Prefer Elementor device classes over iframe width (desktop preview is often tablet-wide).
             if (hasMobileClass) {
                 return 'mobile';
             }
             if (hasTabletClass) {
                 return 'tablet';
+            }
+            if (hasDesktopClass) {
+                return 'desktop';
+            }
+
+            if (window.elementorFrontend && typeof window.elementorFrontend.getCurrentDeviceMode === 'function') {
+                var mode = window.elementorFrontend.getCurrentDeviceMode();
+                if (mode === 'mobile' || mode === 'tablet' || mode === 'desktop') {
+                    return mode;
+                }
             }
 
             var width = window.innerWidth || document.documentElement.clientWidth;

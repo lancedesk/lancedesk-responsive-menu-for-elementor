@@ -173,7 +173,24 @@
         hasClassToken(topDoc, 'elementor-device-tablet') ||
         hasClassToken(topDoc, 'elementor-editor-device-tablet');
 
-      // Elementor editor preview mode is the source of truth when available.
+      const hasDesktopClass =
+        hasClassToken(document, 'elementor-device-desktop') ||
+        hasClassToken(document, 'elementor-editor-device-desktop') ||
+        hasClassToken(topDoc, 'elementor-device-desktop') ||
+        hasClassToken(topDoc, 'elementor-editor-device-desktop');
+
+      // Prefer Elementor device classes over iframe width. Editor "Desktop" preview
+      // is often <1025px wide, which would otherwise be misread as tablet.
+      if (hasMobileClass) {
+        return 'mobile';
+      }
+      if (hasTabletClass) {
+        return 'tablet';
+      }
+      if (hasDesktopClass) {
+        return 'desktop';
+      }
+
       if (window.elementorFrontend && typeof window.elementorFrontend.getCurrentDeviceMode === 'function') {
         const mode = window.elementorFrontend.getCurrentDeviceMode();
         if (mode === 'mobile' || mode === 'tablet' || mode === 'desktop') {
@@ -181,19 +198,6 @@
         }
       }
 
-      if (hasMobileClass) {
-        return 'mobile';
-      }
-      if (hasTabletClass) {
-        return 'tablet';
-      }
-
-      if (document.body.classList.contains('elementor-device-mobile')) {
-        return 'mobile';
-      }
-      if (document.body.classList.contains('elementor-device-tablet')) {
-        return 'tablet';
-      }
       const width = window.innerWidth || document.documentElement.clientWidth;
       return resolveDeviceFromWidth(width);
     }

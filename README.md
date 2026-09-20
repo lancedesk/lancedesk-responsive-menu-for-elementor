@@ -2,7 +2,7 @@
 
 Responsive Elementor menu widget for WordPress with per-device layout controls, flexible submenu triggers, and cleaner mobile navigation behavior.
 
-![Version](https://img.shields.io/badge/version-1.0.18-blue)
+![Version](https://img.shields.io/badge/version-1.0.20-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-green)
 ![WordPress](https://img.shields.io/badge/wordpress-5.0%2B-blue)
 ![PHP](https://img.shields.io/badge/php-7.4%2B-blue)
@@ -52,7 +52,26 @@ Clear, consistent navigation improves user experience and can support better eng
 3. Open Elementor and drag `LanceDesk Responsive Menu` into your layout.
 4. Pick a WordPress menu and configure responsive layout behavior.
 
+## Display Mode, Responsive Layout, and Off-Canvas
+
+- **Display Mode** — **Use Off-Canvas** is a per-widget master switch. When Off, that widget shows the standard list on every device. When On, choose Standard Menu or Off-Canvas per device for **that widget only** (other header/footer menu widgets are unaffected). Example: Desktop = list, Tablet/Mobile = hamburger drawer.
+- **Responsive Layout** — Shown only when at least one device uses Standard Menu. Controls horizontal / vertical / grid layout and vertical item styling. Hidden when every device is Off-Canvas. For a hamburger / drawer toggle, use **Off-Canvas Menu** (Toggle Icon + Toggle Alignment).
+- **Off-Canvas Device Overrides** — Optional per-device slide direction, animation, and panel size. Leave inherit/default to use the global Off-Canvas Menu settings.
+
 ## Changelog
+
+### 1.0.20
+
+- Elementor-native icon controls for layout mode, justify/align, off-canvas slide direction, and vertical item alignment
+- Remove panel instruction notices; document Display Mode / Responsive Layout / Off-Canvas in the readme
+- Hide Responsive Layout when all devices use Off-Canvas; show Vertical Layout Styling only for standard vertical menus
+- Remove redundant standard-menu hamburger; use Off-Canvas toggle controls only
+- Fix Elementor desktop preview misread as tablet (hamburger showing with Desktop = Standard)
+- Keep Use Off-Canvas default Yes so existing widgets do not silently lose off-canvas
+
+### 1.0.19
+
+- Fix WooCommerce shop (and other `wp_nav_menu_objects` integrations) not receiving `current-menu-item`
 
 ### 1.0.18
 

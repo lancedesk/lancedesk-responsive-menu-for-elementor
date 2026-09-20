@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.19
+Stable tag: 1.0.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,12 @@ Instead of duplicating multiple menu widgets and hiding them per breakpoint, you
 
 Yes. Elementor must be active for this widget to appear.
 
+= How do Display Mode, Responsive Layout, and Off-Canvas work together? =
+
+* **Display Mode** — **Use Off-Canvas** is a per-widget master switch. When Off, that widget shows the standard list on every device. When On, choose Standard Menu or Off-Canvas per device for **that widget only** (other header/footer menu widgets are unaffected). Example: Desktop = Standard (list), Tablet + Mobile = Off-Canvas (hamburger).
+* **Responsive Layout** — Appears only when at least one device uses Standard Menu. Controls horizontal / vertical / grid layout and vertical item styling. When every device is Off-Canvas this section is hidden. For a hamburger / drawer toggle, use **Off-Canvas Menu** (Toggle Icon + Toggle Alignment).
+* **Off-Canvas Device Overrides** — Optional per-device slide direction, animation, and panel size. Leave inherit/default to use the global Off-Canvas Menu settings.
+
 = Can I use different menu behaviors on desktop and mobile? =
 
 Yes. You can configure responsive layout and submenu behavior for different devices.
@@ -70,6 +76,14 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 5. Submenu styling and trigger options.
 
 == Changelog ==
+
+= 1.0.20 =
+* Elementor-native icon controls for layout mode, justify content, align items, off-canvas slide direction, and vertical item alignment.
+* Remove inline panel instruction notices; document Display Mode / Responsive Layout / Off-Canvas behavior in the readme FAQ.
+* Hide Responsive Layout when every device uses Off-Canvas; show Vertical Layout Styling only for standard vertical menus.
+* Remove redundant standard-menu hamburger controls; use Off-Canvas Toggle Icon / Toggle Alignment only.
+* Fix Elementor desktop preview mis-detected as tablet (iframe width), which wrongly showed the off-canvas hamburger with Desktop = Standard Menu.
+* Keep Use Off-Canvas default Yes so existing widgets that never stored the setting do not silently lose off-canvas.
 
 = 1.0.19 =
 * Fix WooCommerce shop (and other wp_nav_menu_objects integrations) not receiving current-menu-item: run the same filter chain as wp_nav_menu() after _wp_menu_item_classes_by_context().
@@ -170,6 +184,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.20 =
+Recommended UX update: clearer Elementor-native layout controls, smarter Off-Canvas vs Standard visibility, and an editor fix for Desktop Standard menus showing the hamburger.
 
 = 1.0.16 =
 Declares compatibility with WordPress 7.1 (clears the “not tested with your current version” notice).

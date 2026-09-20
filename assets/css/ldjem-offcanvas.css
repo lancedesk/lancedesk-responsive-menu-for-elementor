@@ -1004,13 +1004,19 @@ body.ldjem-offcanvas-open {
   }
 }
 
-/* JS-enhanced state (optional refinement after init) */
-.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device:not(.ldjem-offcanvas-is-open) .ldjem-hamburger {
+/* JS-enhanced state: only force-show hamburger when this device uses off-canvas.
+   Never use a blanket enabled-device rule — editor desktop preview is often tablet-width. */
+.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device.ldjem-device-desktop[data-offcanvas-desktop="yes"]:not(.ldjem-offcanvas-is-open) .ldjem-hamburger,
+.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device.ldjem-device-tablet[data-offcanvas-tablet="yes"]:not(.ldjem-offcanvas-is-open) .ldjem-hamburger,
+.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-enabled-device.ldjem-device-mobile[data-offcanvas-mobile="yes"]:not(.ldjem-offcanvas-is-open) .ldjem-hamburger {
   display: flex !important;
 }
 
 .ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-disabled-device .ldjem-hamburger,
-.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-disabled-device .ldjem-offcanvas-wrapper {
+.ldjem-menu-wrapper-offcanvas.ldjem-offcanvas-disabled-device .ldjem-offcanvas-wrapper,
+.ldjem-menu-wrapper-offcanvas.ldjem-device-desktop[data-offcanvas-desktop="no"] .ldjem-hamburger,
+.ldjem-menu-wrapper-offcanvas.ldjem-device-tablet[data-offcanvas-tablet="no"] .ldjem-hamburger,
+.ldjem-menu-wrapper-offcanvas.ldjem-device-mobile[data-offcanvas-mobile="no"] .ldjem-hamburger {
   display: none !important;
 }
 

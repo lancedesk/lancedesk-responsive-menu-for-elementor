@@ -169,6 +169,113 @@ class LDJEM_Menu_Widget extends Widget_Base {
     }
 
     /**
+     * Conditions when at least one device uses the standard (inline) menu.
+     *
+     * Used to hide Responsive Layout when every device is Off-Canvas.
+     *
+     * @return array<string, mixed>
+     */
+    private function get_standard_menu_active_conditions() {
+        return [
+            'relation' => 'or',
+            'terms'    => [
+                [
+                    'name'     => 'offcanvas_enable',
+                    'operator' => '!==',
+                    'value'    => 'yes',
+                ],
+                [
+                    'relation' => 'and',
+                    'terms'    => [
+                        [
+                            'name'     => 'offcanvas_enable',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                        [
+                            'name'     => 'offcanvas_on_desktop',
+                            'operator' => '!==',
+                            'value'    => 'yes',
+                        ],
+                    ],
+                ],
+                [
+                    'relation' => 'and',
+                    'terms'    => [
+                        [
+                            'name'     => 'offcanvas_enable',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                        [
+                            'name'     => 'offcanvas_on_tablet',
+                            'operator' => '!==',
+                            'value'    => 'yes',
+                        ],
+                    ],
+                ],
+                [
+                    'relation' => 'and',
+                    'terms'    => [
+                        [
+                            'name'     => 'offcanvas_enable',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                        [
+                            'name'     => 'offcanvas_on_mobile',
+                            'operator' => '!==',
+                            'value'    => 'yes',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Conditions when at least one device uses the standard (inline) vertical layout.
+     *
+     * @return array<string, mixed>
+     */
+    private function get_standard_vertical_layout_conditions() {
+        $device_terms = [];
+
+        foreach (['desktop', 'tablet', 'mobile'] as $device) {
+            $device_terms[] = [
+                'relation' => 'and',
+                'terms'    => [
+                    [
+                        'relation' => 'or',
+                        'terms'    => [
+                            [
+                                'name'     => 'offcanvas_enable',
+                                'operator' => '!==',
+                                'value'    => 'yes',
+                            ],
+                            [
+                                'name'     => 'offcanvas_on_' . $device,
+                                'operator' => '!==',
+                                'value'    => 'yes',
+                            ],
+                        ],
+                    ],
+                    [
+                        'name'     => $device . '_layout',
+                        'operator' => '===',
+                        'value'    => 'vertical',
+                    ],
+                ],
+            ];
+        }
+
+        return [
+            'relation' => 'or',
+            'terms'    => $device_terms,
+        ];
+    }
+
+    /**
      * Register display mode controls (master off-canvas toggle + per-device mode).
      *
      * @return void
@@ -188,30 +295,16 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'display_mode_help',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__(
-                    'Choose Standard Menu or Off-Canvas for each screen size. Responsive Layout controls apply only to devices set to Standard. Off-Canvas settings appear when at least one device uses Off-Canvas.',
-                    'lancedesk-responsive-menu-for-elementor'
-                ),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-            ]
-        );
-
-        $this->add_control(
             'offcanvas_enable',
             [
-                'label'        => esc_html__('Enable Off-Canvas', 'lancedesk-responsive-menu-for-elementor'),
+                'label'        => esc_html__('Use Off-Canvas', 'lancedesk-responsive-menu-for-elementor'),
                 'type'         => Controls_Manager::SWITCHER,
                 'label_on'     => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
                 'label_off'    => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
                 'return_value' => 'yes',
+                // Keep default "yes" so existing Elementor widgets that never stored this
+                // key (they relied on the previous default) do not silently lose off-canvas.
                 'default'      => 'yes',
-                'description'  => esc_html__(
-                    'When disabled, all devices use the standard inline menu. Responsive Layout controls apply to every device.',
-                    'lancedesk-responsive-menu-for-elementor'
-                ),
             ]
         );
 
@@ -256,19 +349,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'condition' => [
                     'offcanvas_enable' => 'yes',
                 ],
-            ]
-        );
-
-        $this->add_control(
-            'display_mode_all_offcanvas_tip',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__(
-                    'Tip: Set Desktop, Tablet, and Mobile to Off-Canvas to use the slide-out menu on every screen size.',
-                    'lancedesk-responsive-menu-for-elementor'
-                ),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
-                'conditions'      => $this->get_offcanvas_active_conditions(),
             ]
         );
 
@@ -545,20 +625,9 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_responsive',
             [
-                'label' => esc_html__('Responsive Layout', 'lancedesk-responsive-menu-for-elementor'),
-                'tab'   => Controls_Manager::TAB_CONTENT,
-            ]
-        );
-
-        $this->add_control(
-            'responsive_layout_help',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__(
-                    'Configure inline menu layout for devices set to Standard Menu in Display Mode. Devices set to Off-Canvas use the Off-Canvas Menu section instead.',
-                    'lancedesk-responsive-menu-for-elementor'
-                ),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+                'label'      => esc_html__('Responsive Layout', 'lancedesk-responsive-menu-for-elementor'),
+                'tab'        => Controls_Manager::TAB_CONTENT,
+                'conditions' => $this->get_standard_menu_active_conditions(),
             ]
         );
 
@@ -588,30 +657,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'desktop_layout_offcanvas_notice',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Desktop off-canvas is enabled. Desktop responsive layout controls are disabled here; configure Desktop Off-Canvas settings in the Off-Canvas sections below.', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-                'conditions'      => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_desktop',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
             'desktop_layout',
             [
                 'label'   => esc_html__('Layout Mode', 'lancedesk-responsive-menu-for-elementor'),
@@ -619,18 +664,19 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'options' => [
                     'horizontal' => [
                         'title' => esc_html__('Horizontal', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-h-align-stretch',
+                        'icon'  => 'eicon-arrow-right',
                     ],
                     'vertical'   => [
                         'title' => esc_html__('Vertical', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-v-align-stretch',
+                        'icon'  => 'eicon-arrow-down',
                     ],
                     'grid'       => [
                         'title' => esc_html__('Grid', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-table',
+                        'icon'  => 'eicon-gallery-grid',
                     ],
                 ],
                 'default' => 'horizontal',
+                'toggle'  => false,
                 'conditions' => [
                     'relation' => 'or',
                     'terms'    => [
@@ -650,15 +696,41 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'desktop_flex_direction',
+            'desktop_justify_content',
             [
-                'label'   => esc_html__('Flex Direction', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::SELECT,
+                'label'   => esc_html__('Justify Content', 'lancedesk-responsive-menu-for-elementor'),
+                'type'    => Controls_Manager::CHOOSE,
                 'options' => [
-                    'row'    => esc_html__('Row (Left to Right)', 'lancedesk-responsive-menu-for-elementor'),
-                    'column' => esc_html__('Column (Top to Bottom)', 'lancedesk-responsive-menu-for-elementor'),
+                    'flex-start' => [
+                        'title' => esc_html__('Start', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-justify-start-h',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-justify-center-h',
+                    ],
+                    'flex-end' => [
+                        'title' => esc_html__('End', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-justify-end-h',
+                    ],
+                    'space-between' => [
+                        'title' => esc_html__('Space Between', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-justify-space-between-h',
+                    ],
+                    'space-around' => [
+                        'title' => esc_html__('Space Around', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-justify-space-around-h',
+                    ],
+                    'space-evenly' => [
+                        'title' => esc_html__('Space Evenly', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-justify-space-evenly-h',
+                    ],
                 ],
-                'default' => 'row',
+                'default' => 'flex-start',
+                'toggle'  => false,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-menu' => 'justify-content: {{VALUE}};',
+                ],
                 'conditions' => [
                     'relation' => 'and',
                     'terms'    => [
@@ -691,63 +763,52 @@ class LDJEM_Menu_Widget extends Widget_Base {
             'desktop_align_items',
             [
                 'label'   => esc_html__('Align Items', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::SELECT,
+                'type'    => Controls_Manager::CHOOSE,
                 'options' => [
-                    'flex-start' => esc_html__('Start', 'lancedesk-responsive-menu-for-elementor'),
-                    'center'     => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
-                    'flex-end'   => esc_html__('End', 'lancedesk-responsive-menu-for-elementor'),
-                    'stretch'    => esc_html__('Stretch', 'lancedesk-responsive-menu-for-elementor'),
+                    'flex-start' => [
+                        'title' => esc_html__('Start', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-align-start-v',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-align-center-v',
+                    ],
+                    'flex-end' => [
+                        'title' => esc_html__('End', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-align-end-v',
+                    ],
+                    'stretch' => [
+                        'title' => esc_html__('Stretch', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-align-stretch-v',
+                    ],
                 ],
                 'default' => 'center',
+                'toggle'  => false,
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-menu' => 'align-items: {{VALUE}};',
                 ],
                 'conditions' => [
-                    'relation' => 'or',
+                    'relation' => 'and',
                     'terms'    => [
                         [
-                            'name'     => 'offcanvas_enable',
+                            'name'     => 'desktop_layout',
                             'operator' => '!==',
-                            'value'    => 'yes',
+                            'value'    => 'grid',
                         ],
                         [
-                            'name'     => 'offcanvas_on_desktop',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'desktop_justify_content',
-            [
-                'label'   => esc_html__('Justify Content', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::SELECT,
-                'options' => [
-                    'flex-start'    => esc_html__('Start', 'lancedesk-responsive-menu-for-elementor'),
-                    'center'        => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
-                    'flex-end'      => esc_html__('End', 'lancedesk-responsive-menu-for-elementor'),
-                    'space-between' => esc_html__('Space Between', 'lancedesk-responsive-menu-for-elementor'),
-                    'space-around'  => esc_html__('Space Around', 'lancedesk-responsive-menu-for-elementor'),
-                ],
-                'default' => 'flex-start',
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu' => 'justify-content: {{VALUE}};',
-                ],
-                'conditions' => [
-                    'relation' => 'or',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '!==',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_desktop',
-                            'operator' => '!==',
-                            'value'    => 'yes',
+                            'relation' => 'or',
+                            'terms'    => [
+                                [
+                                    'name'     => 'offcanvas_enable',
+                                    'operator' => '!==',
+                                    'value'    => 'yes',
+                                ],
+                                [
+                                    'name'     => 'offcanvas_on_desktop',
+                                    'operator' => '!==',
+                                    'value'    => 'yes',
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -780,30 +841,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'tablet_layout_offcanvas_notice',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Tablet off-canvas is enabled. Tablet responsive layout controls are disabled here; configure Tablet Off-Canvas settings in the Off-Canvas sections below.', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-                'conditions'      => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_tablet',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
             'tablet_layout',
             [
                 'label'   => esc_html__('Layout Mode', 'lancedesk-responsive-menu-for-elementor'),
@@ -811,18 +848,19 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'options' => [
                     'horizontal' => [
                         'title' => esc_html__('Horizontal', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-h-align-stretch',
+                        'icon'  => 'eicon-arrow-right',
                     ],
                     'vertical'   => [
                         'title' => esc_html__('Vertical', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-v-align-stretch',
+                        'icon'  => 'eicon-arrow-down',
                     ],
                     'grid'       => [
                         'title' => esc_html__('Grid', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-table',
+                        'icon'  => 'eicon-gallery-grid',
                     ],
                 ],
                 'default' => 'horizontal',
+                'toggle'  => false,
                 'conditions' => [
                     'relation' => 'or',
                     'terms'    => [
@@ -867,30 +905,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
-            'mobile_layout_offcanvas_notice',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__('Mobile off-canvas is enabled. Mobile responsive layout controls are disabled here; configure Mobile Off-Canvas settings in the Off-Canvas sections below.', 'lancedesk-responsive-menu-for-elementor'),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-                'conditions'      => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'offcanvas_enable',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                        [
-                            'name'     => 'offcanvas_on_mobile',
-                            'operator' => '===',
-                            'value'    => 'yes',
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $this->add_control(
             'mobile_layout',
             [
                 'label'   => esc_html__('Layout Mode', 'lancedesk-responsive-menu-for-elementor'),
@@ -898,18 +912,19 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'options' => [
                     'vertical'   => [
                         'title' => esc_html__('Vertical', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-v-align-stretch',
+                        'icon'  => 'eicon-arrow-down',
                     ],
                     'horizontal' => [
                         'title' => esc_html__('Horizontal', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-h-align-stretch',
+                        'icon'  => 'eicon-arrow-right',
                     ],
                     'grid'       => [
                         'title' => esc_html__('Grid', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-table',
+                        'icon'  => 'eicon-gallery-grid',
                     ],
                 ],
                 'default' => 'vertical',
+                'toggle'  => false,
                 'description' => esc_html__('Note: Vertical layout is recommended for mobile', 'lancedesk-responsive-menu-for-elementor'),
                 'conditions' => [
                     'relation' => 'or',
@@ -929,102 +944,47 @@ class LDJEM_Menu_Widget extends Widget_Base {
             ]
         );
 
-        // Hamburger Menu Toggle
-        $this->add_control(
-            'mobile_hamburger_toggle',
-            [
-                'label'   => esc_html__('Show Hamburger Menu', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::SWITCHER,
-                'label_on'  => esc_html__('Yes', 'lancedesk-responsive-menu-for-elementor'),
-                'label_off' => esc_html__('No', 'lancedesk-responsive-menu-for-elementor'),
-                'default' => 'yes',
-                'conditions' => [
-                    'relation' => 'and',
-                    'terms'    => [
-                        [
-                            'name'     => 'mobile_layout',
-                            'operator' => '===',
-                            'value'    => 'vertical',
-                        ],
-                        [
-                            'relation' => 'or',
-                            'terms'    => [
-                                [
-                                    'name'     => 'offcanvas_enable',
-                                    'operator' => '!==',
-                                    'value'    => 'yes',
-                                ],
-                                [
-                                    'name'     => 'offcanvas_on_mobile',
-                                    'operator' => '!==',
-                                    'value'    => 'yes',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        // Hamburger Position
-        $this->add_control(
-            'mobile_hamburger_position',
-            [
-                'label'   => esc_html__('Hamburger Position', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::CHOOSE,
-                'options' => [
-                    'left'  => [
-                        'title' => esc_html__('Left', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-h-align-left',
-                    ],
-                    'center' => [
-                        'title' => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-h-align-center',
-                    ],
-                    'right' => [
-                        'title' => esc_html__('Right', 'lancedesk-responsive-menu-for-elementor'),
-                        'icon'  => 'eicon-h-align-right',
-                    ],
-                ],
-                'default' => 'left',
-                // Make position live in Elementor editor without requiring full re-render.
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas) .ldjem-hamburger' => '{{VALUE}};',
-                ],
-                'selectors_dictionary' => [
-                    'left' => 'margin-left: 0; margin-right: auto',
-                    'center' => 'margin-left: auto; margin-right: auto',
-                    'right' => 'margin-left: auto; margin-right: 0',
-                ],
-                'condition' => [
-                    'mobile_hamburger_toggle' => 'yes',
-                ],
-            ]
-        );
+        $vertical_layout_conditions = $this->get_standard_vertical_layout_conditions();
 
         $this->add_control(
             'heading_vertical_layout_style',
             [
-                'label'     => esc_html__('Vertical Layout Styling', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::HEADING,
-                'separator' => 'before',
+                'label'      => esc_html__('Vertical Layout Styling', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::HEADING,
+                'separator'  => 'before',
+                'conditions' => $vertical_layout_conditions,
             ]
         );
 
         $this->add_responsive_control(
             'vertical_item_alignment',
             [
-                'label'   => esc_html__('Vertical Item Alignment', 'lancedesk-responsive-menu-for-elementor'),
-                'type'    => Controls_Manager::SELECT,
+                'label'   => esc_html__('Alignment', 'lancedesk-responsive-menu-for-elementor'),
+                'type'    => Controls_Manager::CHOOSE,
                 'options' => [
-                    'flex-start' => esc_html__('Left', 'lancedesk-responsive-menu-for-elementor'),
-                    'center'     => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
-                    'flex-end'   => esc_html__('Right', 'lancedesk-responsive-menu-for-elementor'),
+                    'flex-start' => [
+                        'title' => esc_html__('Left', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-text-align-left',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-text-align-center',
+                    ],
+                    'flex-end' => [
+                        'title' => esc_html__('Right', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-text-align-right',
+                    ],
+                    'space-between' => [
+                        'title' => esc_html__('Justified', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-text-align-justify',
+                    ],
                 ],
                 'default' => 'flex-start',
+                'toggle'  => false,
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a' => 'justify-content: {{VALUE}};',
                 ],
+                'conditions' => $vertical_layout_conditions,
             ]
         );
 
@@ -1037,6 +997,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'selectors'  => [
                     '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
+                'conditions' => $vertical_layout_conditions,
             ]
         );
 
@@ -1049,15 +1010,17 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'selectors'  => [
                     '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
+                'conditions' => $vertical_layout_conditions,
             ]
         );
 
         $this->add_control(
             'vertical_separator_heading',
             [
-                'label'     => esc_html__('Vertical Separators', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::HEADING,
-                'separator' => 'before',
+                'label'      => esc_html__('Vertical Separators', 'lancedesk-responsive-menu-for-elementor'),
+                'type'       => Controls_Manager::HEADING,
+                'separator'  => 'before',
+                'conditions' => $vertical_layout_conditions,
             ]
         );
 
@@ -1078,6 +1041,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                     'yes' => 'solid',
                     'no'  => 'none',
                 ],
+                'conditions' => $vertical_layout_conditions,
             ]
         );
 
@@ -1100,8 +1064,16 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-submenu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-submenu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-submenu > .ldjem-menu-item' => '--ldjem-vertical-item-separator-width: {{SIZE}}{{UNIT}};',
                 ],
-                'condition' => [
-                    'vertical_separator_enabled' => 'yes',
+                'conditions' => [
+                    'relation' => 'and',
+                    'terms'    => [
+                        [
+                            'name'     => 'vertical_separator_enabled',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                        $vertical_layout_conditions,
+                    ],
                 ],
             ]
         );
@@ -1115,8 +1087,16 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-submenu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-submenu > .ldjem-menu-item, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-submenu > .ldjem-menu-item' => '--ldjem-vertical-item-separator-color: {{VALUE}};',
                 ],
-                'condition' => [
-                    'vertical_separator_enabled' => 'yes',
+                'conditions' => [
+                    'relation' => 'and',
+                    'terms'    => [
+                        [
+                            'name'     => 'vertical_separator_enabled',
+                            'operator' => '===',
+                            'value'    => 'yes',
+                        ],
+                        $vertical_layout_conditions,
+                    ],
                 ],
             ]
         );
@@ -2754,15 +2734,28 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->add_control(
             'offcanvas_direction',
             [
-                'label'     => esc_html__('Slide Direction', 'lancedesk-responsive-menu-for-elementor'),
-                'type'      => Controls_Manager::SELECT,
-                'options'   => [
-                    'left'   => esc_html__('Left', 'lancedesk-responsive-menu-for-elementor'),
-                    'right'  => esc_html__('Right', 'lancedesk-responsive-menu-for-elementor'),
-                    'top'    => esc_html__('Top', 'lancedesk-responsive-menu-for-elementor'),
-                    'bottom' => esc_html__('Bottom', 'lancedesk-responsive-menu-for-elementor'),
+                'label'   => esc_html__('Slide Direction', 'lancedesk-responsive-menu-for-elementor'),
+                'type'    => Controls_Manager::CHOOSE,
+                'options' => [
+                    'left' => [
+                        'title' => esc_html__('Left', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-arrow-left',
+                    ],
+                    'right' => [
+                        'title' => esc_html__('Right', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-arrow-right',
+                    ],
+                    'top' => [
+                        'title' => esc_html__('Top', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-arrow-up',
+                    ],
+                    'bottom' => [
+                        'title' => esc_html__('Bottom', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-arrow-down',
+                    ],
                 ],
-                'default'   => 'left',
+                'default' => 'left',
+                'toggle'  => false,
                 'condition' => [
                     'offcanvas_enable' => 'yes',
                 ],
@@ -3303,18 +3296,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
             ]
         );
 
-        $this->add_control(
-            'offcanvas_overrides_help',
-            [
-                'type'            => Controls_Manager::RAW_HTML,
-                'raw'             => esc_html__(
-                    'Optional per-device overrides for slide direction, animation, and panel size. Leave inherit/default to use the global Off-Canvas Menu settings.',
-                    'lancedesk-responsive-menu-for-elementor'
-                ),
-                'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
-            ]
-        );
-
         $direction_options = [
             'inherit' => esc_html__('Inherit Global Direction', 'lancedesk-responsive-menu-for-elementor'),
             'left'    => esc_html__('Left', 'lancedesk-responsive-menu-for-elementor'),
@@ -3738,12 +3719,6 @@ class LDJEM_Menu_Widget extends Widget_Base {
             intval($menu_sets['standard']['tablet']),
             intval($menu_sets['standard']['mobile'])
         );
-
-        // Render hamburger for standard menu only.
-        // Off-canvas layout renders its own toggle to avoid duplicate buttons.
-        if (!empty($settings['mobile_hamburger_toggle']) && 'yes' === $settings['mobile_hamburger_toggle'] && !$this->should_render_offcanvas($settings)) {
-            $this->render_hamburger_menu($settings);
-        }
 
         // Render menu items (skip inline menu when every device uses off-canvas).
         if (!$suppress_standard_menu) {
@@ -4854,20 +4829,17 @@ JS;
     }
 
     /**
-     * Resolve hamburger alignment for standard or off-canvas toggle.
+     * Resolve off-canvas toggle alignment.
      *
      * @param array $settings Widget settings.
      * @param bool  $for_offcanvas Whether the toggle is for off-canvas mode.
      * @return string left|center|right
      */
     private function resolve_hamburger_position($settings, $for_offcanvas = false) {
+        $position = 'left';
+
         if ($for_offcanvas) {
-            $position = sanitize_key($settings['offcanvas_toggle_alignment'] ?? '');
-            if ($position === '' || !in_array($position, ['left', 'center', 'right'], true)) {
-                $position = sanitize_key($settings['mobile_hamburger_position'] ?? 'left');
-            }
-        } else {
-            $position = sanitize_key($settings['mobile_hamburger_position'] ?? 'left');
+            $position = sanitize_key($settings['offcanvas_toggle_alignment'] ?? 'left');
         }
 
         if (!in_array($position, ['left', 'center', 'right'], true)) {
@@ -4878,14 +4850,19 @@ JS;
     }
 
     /**
-     * Render hamburger menu button
+     * Render off-canvas hamburger / toggle button.
      * 
      * @param array $settings Widget settings
      * @param bool  $for_offcanvas Whether rendering the off-canvas toggle.
      * @return void
      */
     private function render_hamburger_menu($settings, $for_offcanvas = false) {
-        $position = $this->resolve_hamburger_position($settings, $for_offcanvas);
+        // Standard (inline) menus no longer render a hamburger — use Off-Canvas for toggles.
+        if (!$for_offcanvas) {
+            return;
+        }
+
+        $position = $this->resolve_hamburger_position($settings, true);
 
         $has_custom_icon = !empty($settings['hamburger_icon']) && !empty($settings['hamburger_icon']['value']);
         $button_classes = 'ldjem-hamburger ldjem-hamburger-btn ldjem-hamburger-' . esc_attr($position);
