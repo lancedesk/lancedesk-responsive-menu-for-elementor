@@ -74,6 +74,7 @@ class LDJEM_Helpers {
             'menu'  => $menu_id,
             'depth' => $depth,
         ];
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress filter; must use the unprefixed name.
         $items = apply_filters('wp_nav_menu_objects', $items, $menu_args);
 
         // Build hierarchical structure

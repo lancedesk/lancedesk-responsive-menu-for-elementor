@@ -4,7 +4,7 @@ Tags: elementor, menu, responsive menu, mobile menu, navigation
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.20
+Stable tag: 1.0.21
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,12 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 5. Submenu styling and trigger options.
 
 == Changelog ==
+
+= 1.0.21 =
+* Separate main vs submenu spacing: top-level Item Padding no longer affects dropdown items; add Space Between Items and submenu Vertical Space / Item Padding.
+* Keep submenu toggle inline after the parent label (shared link row) with Toggle Hover Background and Dropdown Align (start/center/end).
+* One continuous submenu panel background so Panel Padding insets inside the same fill.
+* Plugin Check: escape menu markup via wp_kses allowlist; ignore core wp_nav_menu_objects filter prefix warning.
 
 = 1.0.20 =
 * Elementor-native icon controls for layout mode, justify content, align items, off-canvas slide direction, and vertical item alignment.
@@ -184,6 +190,9 @@ The widget includes keyboard navigation support and ARIA attributes for submenu 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.21 =
+Recommended submenu UX update: independent main/submenu padding, inline toggle alignment, continuous panel background, and Dropdown Align control.
 
 = 1.0.20 =
 Recommended UX update: clearer Elementor-native layout controls, smarter Off-Canvas vs Standard visibility, and an editor fix for Desktop Standard menus showing the hamburger.

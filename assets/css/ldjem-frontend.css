@@ -141,9 +141,13 @@
 .ldjem-menu-wrapper .ldjem-submenu {
     position: absolute !important;
     left: 0;
-    top: calc(100% + 2px);
+    top: 100%;
     min-width: 220px;
-    background: #ffffff;
+    /* One continuous panel fill — padding sits inside this same background. */
+    --ldjem-submenu-bg: #ffffff;
+    background: var(--ldjem-submenu-bg) none;
+    background-color: var(--ldjem-submenu-bg);
+    background-clip: border-box;
     border: 1px solid #e0e0e0;
     border-radius: var(--ldjem-border-radius);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -151,7 +155,25 @@
     visibility: hidden;
     pointer-events: none;
     z-index: 1000;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: var(--ldjem-submenu-item-gap, 0px);
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Keep item chrome transparent so panel padding never looks like a second band.
+   Hover background is applied only via the Submenus → Item Hover Background control. */
+.ldjem-menu-wrapper .ldjem-submenu > .ldjem-menu-item,
+.ldjem-menu-wrapper .ldjem-submenu .ldjem-menu-link-row,
+.ldjem-menu-wrapper .ldjem-submenu .ldjem-menu-item > a,
+.ldjem-menu-wrapper .ldjem-submenu .ldjem-menu-link-row > a {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
 }
 
 .ldjem-menu-wrapper[data-submenu-trigger="hover"] .ldjem-menu-item:hover > .ldjem-submenu,
@@ -162,18 +184,89 @@
     pointer-events: auto;
 }
 
+/* Label + chevron share one padded row so they stay adjacent and vertically aligned. */
+.ldjem-menu-wrapper .ldjem-menu-link-row {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--ldjem-submenu-toggle-spacing, 6px);
+    box-sizing: border-box;
+    max-width: 100%;
+    padding: 12px 16px;
+}
+
+.ldjem-menu-wrapper .ldjem-menu > .ldjem-menu-item-parent {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+    align-items: stretch;
+}
+
+.ldjem-menu-wrapper .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.ldjem-menu-wrapper .ldjem-menu-link-row > a {
+    display: inline-block;
+    padding: 0 !important;
+    margin: 0;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    line-height: inherit;
+}
+
+.ldjem-menu-wrapper .ldjem-menu > .ldjem-menu-item-parent > .ldjem-submenu {
+    /* Absolute dropdown must not affect the label+toggle row sizing */
+    flex: none;
+    width: max-content;
+    min-width: 220px;
+}
+
 .ldjem-menu-wrapper .ldjem-submenu-toggle {
     -webkit-appearance: none;
     appearance: none;
     border: none;
     box-shadow: none;
-    background: transparent;
+    background: transparent !important;
+    background-color: transparent !important;
     border-radius: 0;
     outline: none;
     position: relative;
     z-index: 2;
     pointer-events: auto;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    align-self: center;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    height: 1em;
+    width: auto;
+    vertical-align: middle;
+}
+
+.ldjem-menu-wrapper .ldjem-submenu-toggle i,
+.ldjem-menu-wrapper .ldjem-submenu-toggle svg,
+.ldjem-menu-wrapper .ldjem-submenu-toggle .ldjem-submenu-toggle-fallback {
+    display: block;
+    line-height: 1;
+}
+
+.ldjem-menu-wrapper .ldjem-submenu-toggle:hover,
+.ldjem-menu-wrapper .ldjem-submenu-toggle:focus,
+.ldjem-menu-wrapper .ldjem-submenu-toggle:focus-visible,
+.ldjem-menu-wrapper .ldjem-submenu-toggle:active {
+    background: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
+    background-color: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
+    box-shadow: none !important;
 }
 
 .ldjem-menu-wrapper .ldjem-hamburger-right {
@@ -211,13 +304,7 @@
     font-size: 16px;
 }
 
-.ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a,
-.ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a,
-.ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a {
-    display: flex;
-    width: 100%;
-    box-sizing: border-box;
-}
+/* Vertical full-bleed links are applied inside breakpoint media queries below. */
 
 .ldjem-menu-item a:hover {
     color: var(--ldjem-color-hover);
@@ -225,7 +312,9 @@
 }
 
 .ldjem-menu-item.current-menu-item > a,
-.ldjem-menu-item.current-menu-ancestor > a {
+.ldjem-menu-item.current-menu-item > .ldjem-menu-link-row > a,
+.ldjem-menu-item.current-menu-ancestor > a,
+.ldjem-menu-item.current-menu-ancestor > .ldjem-menu-link-row > a {
     color: var(--ldjem-color-active);
     font-weight: 600;
     text-decoration-line: none;
@@ -257,6 +346,35 @@
         display: flex !important;
         flex-direction: row !important;
         width: auto !important;
+        flex-wrap: nowrap;
+    }
+
+    .ldjem-menu-wrapper[data-desktop-layout="horizontal"] .ldjem-menu > .ldjem-menu-item-parent {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .ldjem-menu-wrapper[data-desktop-layout="horizontal"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row {
+        display: inline-flex;
+        width: auto;
+    }
+
+    .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent {
+        display: flex;
+        width: 100%;
+    }
+
+    .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row {
+        display: flex;
+        width: 100%;
+    }
+
+    .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item:not(.ldjem-menu-item-parent) > a {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .ldjem-menu-wrapper[data-desktop-layout="grid"] .ldjem-menu {
@@ -275,7 +393,8 @@
         position: absolute;
         left: 0;
         top: 100%;
-        background: #ffffff;
+        background: var(--ldjem-submenu-bg, #ffffff) none;
+        background-color: var(--ldjem-submenu-bg, #ffffff);
         min-width: 200px;
         opacity: 0;
         visibility: hidden;
@@ -289,6 +408,7 @@
         border: 1px solid #e0e0e0;
         border-radius: var(--ldjem-border-radius);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
     }
 
     .ldjem-menu-item:hover > .ldjem-submenu,
@@ -331,18 +451,42 @@
         font-size: 14px;
     }
 
+    .ldjem-submenu .ldjem-menu-link-row {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        padding: 10px 16px;
+        box-sizing: border-box;
+    }
+
+    .ldjem-submenu .ldjem-menu-link-row > a {
+        display: block;
+        flex: 1 1 auto;
+        width: auto;
+        padding: 0 !important;
+        font-size: 14px;
+    }
+
     .ldjem-submenu .ldjem-menu-item a:hover {
-        background: #f5f5f5;
+        background: transparent;
     }
 
     .ldjem-submenu-toggle {
-        margin-left: 4px;
+        margin: 0;
         border: none;
-        background: transparent;
-    cursor: pointer;
-    color: var(--ldjem-color-primary);
-    padding: 0;
-    line-height: 1;
+        background: transparent !important;
+        background-color: transparent !important;
+        cursor: pointer;
+        color: var(--ldjem-color-primary);
+        padding: 0;
+        line-height: 1;
+    }
+
+    .ldjem-submenu-toggle:hover,
+    .ldjem-submenu-toggle:focus,
+    .ldjem-submenu-toggle:active {
+        background: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
+        background-color: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
     }
 
     .ldjem-submenu-toggle i,
@@ -354,8 +498,8 @@
         transition: transform var(--ldjem-animation-duration) ease;
     }
 
-    .ldjem-menu-item.is-expanded > .ldjem-submenu-toggle i,
-    .ldjem-menu-item.is-expanded > .ldjem-submenu-toggle svg {
+    .ldjem-menu-item.is-expanded .ldjem-submenu-toggle i,
+    .ldjem-menu-item.is-expanded .ldjem-submenu-toggle svg {
         transform: rotate(180deg);
     }
 
@@ -396,6 +540,35 @@
         display: flex !important;
         flex-direction: row !important;
         width: auto !important;
+        flex-wrap: nowrap;
+    }
+
+    .ldjem-menu-wrapper[data-tablet-layout="horizontal"] .ldjem-menu > .ldjem-menu-item-parent {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .ldjem-menu-wrapper[data-tablet-layout="horizontal"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row {
+        display: inline-flex;
+        width: auto;
+    }
+
+    .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent {
+        display: flex;
+        width: 100%;
+    }
+
+    .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row {
+        display: flex;
+        width: 100%;
+    }
+
+    .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item:not(.ldjem-menu-item-parent) > a {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .ldjem-menu-wrapper:not(.ldjem-menu-wrapper-offcanvas)[data-tablet-layout="horizontal"] .ldjem-hamburger {
@@ -434,7 +607,8 @@
         position: absolute;
         left: 0;
         top: 100%;
-        background: #ffffff;
+        background: var(--ldjem-submenu-bg, #ffffff) none;
+        background-color: var(--ldjem-submenu-bg, #ffffff);
         min-width: 180px;
         opacity: 0;
         visibility: hidden;
@@ -443,7 +617,7 @@
         z-index: 1000;
         list-style: none;
         margin: 0;
-        padding: 8px 0;
+        padding: 0;
         border: 1px solid #e0e0e0;
         border-radius: var(--ldjem-border-radius);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -477,13 +651,21 @@
     }
 
     .ldjem-submenu-toggle {
-        margin-left: var(--ldjem-submenu-toggle-spacing, 0);
+        margin: 0;
         border: none;
-        background: transparent;
+        background: transparent !important;
+        background-color: transparent !important;
         cursor: pointer;
         color: var(--ldjem-color-primary);
-        padding: 6px 0;
+        padding: 0;
         line-height: 1;
+    }
+
+    .ldjem-submenu-toggle:hover,
+    .ldjem-submenu-toggle:focus,
+    .ldjem-submenu-toggle:active {
+        background: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
+        background-color: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
     }
 }
 
@@ -605,14 +787,50 @@
         padding-left: 32px;
     }
 
-    .ldjem-submenu-toggle {
+    .ldjem-menu-wrapper[data-mobile-layout="horizontal"] .ldjem-menu > .ldjem-menu-item-parent {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .ldjem-menu-wrapper[data-mobile-layout="horizontal"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row {
+        display: inline-flex;
+        width: auto;
+    }
+
+    .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row {
+        display: flex;
+        width: 100%;
+        align-items: center;
+    }
+
+    .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu-link-row > a {
+        flex: 1 1 auto;
+    }
+
+    .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-submenu-toggle {
         border: none;
-        background: transparent;
+        background: transparent !important;
+        background-color: transparent !important;
         cursor: pointer;
         color: var(--ldjem-color-primary);
-        padding: 10px 12px;
-        margin-right: 8px;
+        padding: 0;
+        margin: 0 0 0 auto;
         align-self: center;
+    }
+
+    .ldjem-submenu-toggle:hover,
+    .ldjem-submenu-toggle:focus,
+    .ldjem-submenu-toggle:active {
+        background: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
+        background-color: var(--ldjem-submenu-toggle-hover-bg, transparent) !important;
     }
 
     .ldjem-submenu-toggle i,
@@ -623,8 +841,8 @@
         transition: transform var(--ldjem-animation-duration) ease;
     }
 
-    .ldjem-menu-item.is-expanded > .ldjem-submenu-toggle i,
-    .ldjem-menu-item.is-expanded > .ldjem-submenu-toggle svg {
+    .ldjem-menu-item.is-expanded .ldjem-submenu-toggle i,
+    .ldjem-menu-item.is-expanded .ldjem-submenu-toggle svg {
         transform: rotate(180deg);
     }
 

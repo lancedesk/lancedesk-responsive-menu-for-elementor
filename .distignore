@@ -1,7 +1,32 @@
-# Paths excluded from WordPress.org trunk zip (e.g. 10up/action-wordpress-plugin-deploy).
-# Contents of directory-assets/ still belong in SVN assets/, not trunk.
+# Paths excluded from WordPress.org / Plugin Check release zips.
+# Keep runtime plugin files only in the distributable package.
 
-.github/
+.git
+.github
+.gitignore
+.gitattributes
+.distignore
+.editorconfig
+.DS_Store
+Thumbs.db
+
+# Dev / docs / tooling (not loaded by WordPress)
 README.md
-directory-assets/
-scripts/
+CONTRIBUTING.md
+composer.json
+composer.lock
+phpcs.xml
+phpcs.xml.dist
+phpunit.xml
+phpunit.xml.dist
+package.json
+package-lock.json
+node_modules
+tests
+docs
+scripts
+directory-assets
+bin
+.vscode
+.idea
+*.zip

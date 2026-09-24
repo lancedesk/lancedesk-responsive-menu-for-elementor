@@ -995,7 +995,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px'],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item:not(.ldjem-menu-item-parent) > a, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item:not(.ldjem-menu-item-parent) > a, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item:not(.ldjem-menu-item-parent) > a, {{WRAPPER}} .ldjem-menu-wrapper[data-desktop-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row, {{WRAPPER}} .ldjem-menu-wrapper[data-tablet-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row, {{WRAPPER}} .ldjem-menu-wrapper[data-mobile-layout="vertical"] .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
                 'conditions' => $vertical_layout_conditions,
             ]
@@ -1160,7 +1160,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#0073aa',
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-item.current-menu-item > a' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-item > .ldjem-menu-link-row > a' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -1185,7 +1185,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 ],
                 'default' => 'none',
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-item > a:hover' => 'text-decoration-line: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-menu-item-parent > .ldjem-menu-link-row > a:hover' => 'text-decoration-line: {{VALUE}};',
                 ],
             ]
         );
@@ -1201,7 +1201,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 ],
                 'default' => 'none',
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a' => 'text-decoration-line: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-item > .ldjem-menu-link-row > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > .ldjem-menu-link-row > a' => 'text-decoration-line: {{VALUE}};',
                 ],
             ]
         );
@@ -1212,7 +1212,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'label'     => esc_html__('Underline Color', 'lancedesk-responsive-menu-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a' => 'text-decoration-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-menu-item-parent > .ldjem-menu-link-row > a:hover, {{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-item > .ldjem-menu-link-row > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > .ldjem-menu-link-row > a' => 'text-decoration-color: {{VALUE}};',
                 ],
             ]
         );
@@ -1230,7 +1230,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
                     ],
                 ],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a' => 'text-decoration-thickness: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-menu-item-parent > .ldjem-menu-link-row > a:hover, {{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-item > .ldjem-menu-link-row > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > .ldjem-menu-link-row > a' => 'text-decoration-thickness: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -1248,38 +1248,59 @@ class LDJEM_Menu_Widget extends Widget_Base {
                     ],
                 ],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a' => 'text-underline-offset: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-menu-item-parent > .ldjem-menu-link-row > a:hover, {{WRAPPER}} .ldjem-menu-item.current-menu-item > a, {{WRAPPER}} .ldjem-menu-item.current-menu-item > .ldjem-menu-link-row > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > a, {{WRAPPER}} .ldjem-menu-item.current-menu-ancestor > .ldjem-menu-link-row > a' => 'text-underline-offset: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
 
-        // Spacing
-        $this->add_control(
+        // Spacing (top-level main menu only — submenus have their own controls)
+        $this->add_responsive_control(
+            'menu_item_gap',
+            [
+                'label'       => esc_html__('Space Between Items', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SLIDER,
+                'size_units'  => ['px', 'em', 'rem'],
+                'range'       => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 80,
+                    ],
+                ],
+                'selectors'   => [
+                    '{{WRAPPER}} .ldjem-menu' => 'gap: {{SIZE}}{{UNIT}};',
+                ],
+                'description' => esc_html__('Horizontal gap for row menus; vertical gap when the main menu is stacked.', 'lancedesk-responsive-menu-for-elementor'),
+            ]
+        );
+
+        $this->add_responsive_control(
             'menu_item_padding',
             [
-                'label'      => esc_html__('Padding', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em', '%'],
-                'default'    => [
+                'label'       => esc_html__('Item Padding', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::DIMENSIONS,
+                'size_units'  => ['px', 'em', '%'],
+                'default'     => [
                     'top'    => '12',
                     'right'  => '16',
                     'bottom' => '12',
                     'left'   => '16',
                 ],
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-item a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                'selectors'   => [
+                    '{{WRAPPER}} .ldjem-menu > .ldjem-menu-item:not(.ldjem-menu-item-parent) > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
+                'description' => esc_html__('Applies only to top-level menu links. Submenu item padding is under Style → Submenus.', 'lancedesk-responsive-menu-for-elementor'),
             ]
         );
 
-        $this->add_control(
+        $this->add_responsive_control(
             'menu_item_margin',
             [
-                'label'      => esc_html__('Margin', 'lancedesk-responsive-menu-for-elementor'),
+                'label'      => esc_html__('Item Margin', 'lancedesk-responsive-menu-for-elementor'),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'em', '%'],
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-menu-item' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                'selectors'  => [
+                    '{{WRAPPER}} .ldjem-menu > .ldjem-menu-item' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -1290,7 +1311,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
             [
                 'name'     => 'menu_item_border',
                 'label'    => esc_html__('Border', 'lancedesk-responsive-menu-for-elementor'),
-                'selector' => '{{WRAPPER}} .ldjem-menu-item a',
+                'selector' => '{{WRAPPER}} .ldjem-menu > .ldjem-menu-item:not(.ldjem-menu-item-parent) > a, {{WRAPPER}} .ldjem-menu > .ldjem-menu-item-parent > .ldjem-menu-link-row',
             ]
         );
 
@@ -1350,9 +1371,18 @@ class LDJEM_Menu_Widget extends Widget_Base {
         );
 
         $this->add_control(
+            'submenu_toggle_heading',
+            [
+                'label'     => esc_html__('Toggle Icon', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
             'submenu_indicator_icon',
             [
-                'label'   => esc_html__('Submenu Toggle Icon', 'lancedesk-responsive-menu-for-elementor'),
+                'label'   => esc_html__('Icon', 'lancedesk-responsive-menu-for-elementor'),
                 'type'    => Controls_Manager::ICONS,
                 'default' => [
                     'value'   => 'fas fa-chevron-down',
@@ -1364,29 +1394,30 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->add_responsive_control(
             'submenu_indicator_spacing',
             [
-                'label'      => esc_html__('Toggle Icon Spacing', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range'      => [
+                'label'       => esc_html__('Spacing from Label', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SLIDER,
+                'size_units'  => ['px'],
+                'range'       => [
                     'px' => [
                         'min' => 0,
                         'max' => 40,
                     ],
                 ],
-                'default' => [
-                    'size' => 4,
+                'default'     => [
+                    'size' => 6,
                     'unit' => 'px',
                 ],
-                'selectors' => [
-                    '{{WRAPPER}} .ldjem-submenu-toggle' => '--ldjem-submenu-toggle-spacing: {{SIZE}}{{UNIT}};',
+                'selectors'   => [
+                    '{{WRAPPER}} .ldjem-menu-link-row' => '--ldjem-submenu-toggle-spacing: {{SIZE}}{{UNIT}}; gap: {{SIZE}}{{UNIT}};',
                 ],
+                'description' => esc_html__('Keeps the chevron inline after the parent label (not below it).', 'lancedesk-responsive-menu-for-elementor'),
             ]
         );
 
         $this->add_responsive_control(
             'submenu_indicator_size',
             [
-                'label'      => esc_html__('Toggle Icon Size', 'lancedesk-responsive-menu-for-elementor'),
+                'label'      => esc_html__('Size', 'lancedesk-responsive-menu-for-elementor'),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'em', 'rem'],
                 'range'      => [
@@ -1409,7 +1440,7 @@ class LDJEM_Menu_Widget extends Widget_Base {
         $this->add_control(
             'submenu_indicator_color',
             [
-                'label'     => esc_html__('Toggle Icon Color', 'lancedesk-responsive-menu-for-elementor'),
+                'label'     => esc_html__('Color', 'lancedesk-responsive-menu-for-elementor'),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-submenu-toggle' => 'color: {{VALUE}};',
@@ -1418,7 +1449,29 @@ class LDJEM_Menu_Widget extends Widget_Base {
             ]
         );
 
+        $this->add_control(
+            'submenu_indicator_hover_bg',
+            [
+                'label'       => esc_html__('Hover Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::COLOR,
+                'default'     => '',
+                'selectors'   => [
+                    '{{WRAPPER}} .ldjem-submenu-toggle' => '--ldjem-submenu-toggle-hover-bg: {{VALUE}};',
+                ],
+                'description' => esc_html__('Overrides theme button hover backgrounds. Leave empty for transparent.', 'lancedesk-responsive-menu-for-elementor'),
+            ]
+        );
+
         // Submenu Colors
+        $this->add_control(
+            'submenu_panel_heading',
+            [
+                'label'     => esc_html__('Dropdown Panel', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
         $this->add_control(
             'submenu_background',
             [
@@ -1426,7 +1479,8 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-submenu-bg: {{VALUE}};',
-                    '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .ldjem-submenu' => '--ldjem-submenu-bg: {{VALUE}}; background-color: {{VALUE}}; background-image: none;',
+                    '{{WRAPPER}} .ldjem-offcanvas-submenu' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -1439,6 +1493,17 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 'selectors' => [
                     '{{WRAPPER}} .ldjem-offcanvas-wrapper' => '--ldjem-offcanvas-submenu-link-color: {{VALUE}};',
                     '{{WRAPPER}} .ldjem-submenu a, {{WRAPPER}} .ldjem-offcanvas-submenu a' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'submenu_item_hover_bg',
+            [
+                'label'     => esc_html__('Item Hover Background', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-submenu .ldjem-menu-item > a:hover, {{WRAPPER}} .ldjem-submenu .ldjem-menu-link-row:hover, {{WRAPPER}} .ldjem-submenu .ldjem-menu-link-row:hover > a, {{WRAPPER}} .ldjem-offcanvas-submenu .ldjem-offcanvas-submenu-item > a:hover' => 'background-color: {{VALUE}} !important;',
                 ],
             ]
         );
@@ -1465,26 +1530,104 @@ class LDJEM_Menu_Widget extends Widget_Base {
             ]
         );
 
+        $this->add_control(
+            'submenu_h_align',
+            [
+                'label'   => esc_html__('Dropdown Align', 'lancedesk-responsive-menu-for-elementor'),
+                'type'    => Controls_Manager::CHOOSE,
+                'options' => [
+                    'left' => [
+                        'title' => esc_html__('Start of parent', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-h-align-left',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center under parent', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-h-align-center',
+                    ],
+                    'right' => [
+                        'title' => esc_html__('End of parent', 'lancedesk-responsive-menu-for-elementor'),
+                        'icon'  => 'eicon-h-align-right',
+                    ],
+                ],
+                'default' => 'left',
+                'toggle'  => false,
+                'description' => esc_html__('Desktop/tablet dropdowns: left-align is the usual WordPress pattern; center sits under the parent label.', 'lancedesk-responsive-menu-for-elementor'),
+                'selectors_dictionary' => [
+                    'left'   => 'left: 0; right: auto; transform: none;',
+                    'center' => 'left: 50%; right: auto; transform: translateX(-50%);',
+                    'right'  => 'left: auto; right: 0; transform: none;',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .ldjem-menu > .ldjem-menu-item-parent > .ldjem-submenu' => '{{VALUE}}',
+                ],
+            ]
+        );
+
         $this->add_responsive_control(
             'submenu_panel_padding',
             [
-                'label'      => esc_html__('Submenu Panel Padding', 'lancedesk-responsive-menu-for-elementor'),
-                'type'       => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%', 'em', 'rem'],
-                'selectors'  => [
+                'label'       => esc_html__('Panel Padding', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::DIMENSIONS,
+                'size_units'  => ['px', '%', 'em', 'rem'],
+                'default'     => [
+                    'top'      => '8',
+                    'right'    => '0',
+                    'bottom'   => '8',
+                    'left'     => '0',
+                    'unit'     => 'px',
+                    'isLinked' => false,
+                ],
+                'description' => esc_html__('Inset inside the dropdown. Uses the same panel background — it will not create a separate band.', 'lancedesk-responsive-menu-for-elementor'),
+                'selectors'   => [
                     '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
+            ]
+        );
+
+        $this->add_control(
+            'submenu_items_heading',
+            [
+                'label'     => esc_html__('Submenu Items', 'lancedesk-responsive-menu-for-elementor'),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'submenu_item_gap',
+            [
+                'label'       => esc_html__('Vertical Space Between Items', 'lancedesk-responsive-menu-for-elementor'),
+                'type'        => Controls_Manager::SLIDER,
+                'size_units'  => ['px', 'em', 'rem'],
+                'range'       => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 40,
+                    ],
+                ],
+                'selectors'   => [
+                    '{{WRAPPER}} .ldjem-submenu, {{WRAPPER}} .ldjem-offcanvas-submenu' => '--ldjem-submenu-item-gap: {{SIZE}}{{UNIT}};',
+                ],
+                'description' => esc_html__('Space between submenu links. Use Item Padding below for left/right/top/bottom inset.', 'lancedesk-responsive-menu-for-elementor'),
             ]
         );
 
         $this->add_responsive_control(
             'submenu_item_padding',
             [
-                'label'      => esc_html__('Submenu Item Padding', 'lancedesk-responsive-menu-for-elementor'),
+                'label'      => esc_html__('Item Padding', 'lancedesk-responsive-menu-for-elementor'),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%', 'em', 'rem'],
+                'default'    => [
+                    'top'      => '10',
+                    'right'    => '16',
+                    'bottom'   => '10',
+                    'left'     => '16',
+                    'unit'     => 'px',
+                    'isLinked' => false,
+                ],
                 'selectors'  => [
-                    '{{WRAPPER}} .ldjem-submenu .ldjem-menu-item > a, {{WRAPPER}} .ldjem-offcanvas-submenu .ldjem-offcanvas-submenu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .ldjem-submenu .ldjem-menu-item:not(.ldjem-menu-item-parent) > a, {{WRAPPER}} .ldjem-submenu .ldjem-menu-item-parent > .ldjem-menu-link-row, {{WRAPPER}} .ldjem-offcanvas-submenu .ldjem-offcanvas-submenu-item > a' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -3724,7 +3867,10 @@ class LDJEM_Menu_Widget extends Widget_Base {
         if (!$suppress_standard_menu) {
             printf(
                 '<ul class="ldjem-menu ldjem-menu-root">%s</ul>',
-                LDJEM_Security::sanitize_menu_markup($this->render_menu_items($menu_items, 0, $settings))
+                wp_kses(
+                    $this->render_menu_items($menu_items, 0, $settings),
+                    LDJEM_Security::get_allowed_menu_html()
+                )
             );
             $this->render_standard_menu_templates($menu_sets['standard'], $menu_items_map, $settings);
         }
@@ -3965,7 +4111,10 @@ class LDJEM_Menu_Widget extends Widget_Base {
                 '<ul class="ldjem-menu-template ldjem-menu-template-%1$s" data-ldjem-menu-variant="standard-%1$s" data-menu-id="%2$d">%3$s</ul>',
                 esc_attr($device),
                 intval($menu_id),
-                LDJEM_Security::sanitize_menu_markup($this->render_menu_items($items, 0, $settings))
+                wp_kses(
+                    $this->render_menu_items($items, 0, $settings),
+                    LDJEM_Security::get_allowed_menu_html()
+                )
             );
         }
         echo '</div>';
@@ -4356,7 +4505,10 @@ JS;
         }
 
         echo '<div class="ldjem-offcanvas-menu-container">';
-        echo '<ul class="ldjem-offcanvas-menu">' . LDJEM_Security::sanitize_menu_markup($this->render_offcanvas_menu_items($menu_items, 0, $settings)) . '</ul>';
+        echo '<ul class="ldjem-offcanvas-menu">' . wp_kses(
+            $this->render_offcanvas_menu_items($menu_items, 0, $settings),
+            LDJEM_Security::get_allowed_menu_html()
+        ) . '</ul>';
         echo '<div class="ldjem-offcanvas-device-templates" hidden aria-hidden="true">';
         foreach (['desktop', 'tablet', 'mobile'] as $device) {
             $menu_id = !empty($offcanvas_menu_ids[$device]) ? intval($offcanvas_menu_ids[$device]) : 0;
@@ -4365,7 +4517,10 @@ JS;
                 '<ul class="ldjem-offcanvas-menu-template ldjem-offcanvas-menu-template-%1$s" data-ldjem-menu-variant="offcanvas-%1$s" data-menu-id="%2$d">%3$s</ul>',
                 esc_attr($device),
                 intval($menu_id),
-                LDJEM_Security::sanitize_menu_markup($this->render_offcanvas_menu_items($items, 0, $settings))
+                wp_kses(
+                    $this->render_offcanvas_menu_items($items, 0, $settings),
+                    LDJEM_Security::get_allowed_menu_html()
+                )
             );
         }
         echo '</div>';
@@ -4919,19 +5074,23 @@ JS;
             // Add level class
             $classes[] = 'ldjem-menu-level-' . $level;
 
-            // Render menu item
-            $html .= sprintf(
-                '<li class="%1$s"><a href="%2$s"%3$s%4$s>%5$s</a>',
-                esc_attr(implode(' ', $classes)),
+            $link_open = sprintf(
+                '<a href="%1$s"%2$s%3$s>',
                 LDJEM_Security::escape_url($item->url),
                 !empty($item->target) ? ' target="' . esc_attr($item->target) . '"' : ((!empty($settings['link_target']) && in_array($settings['link_target'], ['_blank', '_self'], true)) ? ' target="' . esc_attr($settings['link_target']) . '"' : ''),
-                !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : '',
-                LDJEM_Security::escape_html($item->title)
+                !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : ''
             );
+            $link_label = LDJEM_Security::escape_html($item->title);
 
-            // Render submenu if has children
+            // Parents wrap label + toggle in one row so padding/alignment stay tied together.
             if (!empty($item->children)) {
-                $html .= $this->render_submenu_toggle_markup($settings);
+                $html .= sprintf(
+                    '<li class="%1$s"><span class="ldjem-menu-link-row">%2$s%3$s</a>%4$s</span>',
+                    esc_attr(implode(' ', $classes)),
+                    $link_open,
+                    $link_label,
+                    $this->render_submenu_toggle_markup($settings)
+                );
 
                 $animation_class = esc_attr($this->get_submenu_animation_class($settings));
                 $html .= sprintf(
@@ -4939,6 +5098,13 @@ JS;
                     $level + 1,
                     $animation_class ? ' ' . $animation_class : '',
                     LDJEM_Security::sanitize_menu_markup($this->render_menu_items($item->children, $level + 1, $settings))
+                );
+            } else {
+                $html .= sprintf(
+                    '<li class="%1$s">%2$s%3$s</a>',
+                    esc_attr(implode(' ', $classes)),
+                    $link_open,
+                    $link_label
                 );
             }
 

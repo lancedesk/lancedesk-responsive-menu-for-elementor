@@ -89,18 +89,18 @@
                 if (isAccordion && !isExpanded) {
                     var $siblings = $parent.siblings('.' + self.settings.menuItemParentClass + '.' + self.settings.menuExpandedClass);
                     $siblings.removeClass(self.settings.menuExpandedClass);
-                    $siblings.find('> .ldjem-submenu-toggle').attr('aria-expanded', 'false');
-                    $siblings.find('> a').attr('aria-expanded', 'false');
+                    $siblings.find('.ldjem-submenu-toggle').attr('aria-expanded', 'false');
+                    $siblings.find('.ldjem-menu-link-row > a, > a').attr('aria-expanded', 'false');
                 }
 
                 if (isExpanded) {
                     $parent.removeClass(self.settings.menuExpandedClass);
                     $toggle.attr('aria-expanded', 'false');
-                    $parent.find('> a').attr('aria-expanded', 'false');
+                    $parent.find('.ldjem-menu-link-row > a, > a').first().attr('aria-expanded', 'false');
                 } else {
                     $parent.addClass(self.settings.menuExpandedClass);
                     $toggle.attr('aria-expanded', 'true');
-                    $parent.find('> a').attr('aria-expanded', 'true');
+                    $parent.find('.ldjem-menu-link-row > a, > a').first().attr('aria-expanded', 'true');
                 }
 
             });
@@ -563,8 +563,8 @@
             if (!wrapperTarget) {
                 document.querySelectorAll('.ldjem-menu-wrapper[data-submenu-trigger="click"] .ldjem-menu-item-parent.is-expanded, .ldjem-menu-wrapper[data-submenu-trigger="hover_click"] .ldjem-menu-item-parent.is-expanded').forEach(function (parent) {
                     parent.classList.remove('is-expanded');
-                    var btn = parent.querySelector(':scope > .ldjem-submenu-toggle');
-                    var link = parent.querySelector(':scope > a');
+                    var btn = parent.querySelector('.ldjem-menu-link-row > .ldjem-submenu-toggle, :scope > .ldjem-submenu-toggle');
+                    var link = parent.querySelector('.ldjem-menu-link-row > a, :scope > a');
                     if (btn) {
                         btn.setAttribute('aria-expanded', 'false');
                     }
@@ -576,7 +576,7 @@
             }
 
             var toggle = evt.target.closest('.ldjem-menu-wrapper[data-ldjem-id] .ldjem-submenu-toggle');
-            var parentLinkClick = evt.target.closest('.ldjem-menu-wrapper[data-ldjem-id] .ldjem-menu-item-parent > a');
+            var parentLinkClick = evt.target.closest('.ldjem-menu-wrapper[data-ldjem-id] .ldjem-menu-item-parent .ldjem-menu-link-row > a, .ldjem-menu-wrapper[data-ldjem-id] .ldjem-menu-item-parent > a');
             if (!toggle && !parentLinkClick) {
                 return;
             }
@@ -613,7 +613,7 @@
             }
 
             var isExpanded = parent.classList.contains('is-expanded');
-            var parentLink = parent.querySelector(':scope > a');
+            var parentLink = parent.querySelector('.ldjem-menu-link-row > a, :scope > a');
             var siblings;
 
             if (isExpanded) {
@@ -631,8 +631,8 @@
                         return child !== parent && child.classList && child.classList.contains('ldjem-menu-item-parent') && child.classList.contains('is-expanded');
                     });
                     siblings.forEach(function (sibling) {
-                        var siblingToggle = sibling.querySelector(':scope > .ldjem-submenu-toggle');
-                        var siblingLink = sibling.querySelector(':scope > a');
+                        var siblingToggle = sibling.querySelector('.ldjem-menu-link-row > .ldjem-submenu-toggle, :scope > .ldjem-submenu-toggle');
+                        var siblingLink = sibling.querySelector('.ldjem-menu-link-row > a, :scope > a');
                         sibling.classList.remove('is-expanded');
                         if (siblingToggle) {
                             siblingToggle.setAttribute('aria-expanded', 'false');

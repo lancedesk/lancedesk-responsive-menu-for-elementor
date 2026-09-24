@@ -2,7 +2,7 @@
 
 Responsive Elementor menu widget for WordPress with per-device layout controls, flexible submenu triggers, and cleaner mobile navigation behavior.
 
-![Version](https://img.shields.io/badge/version-1.0.20-blue)
+![Version](https://img.shields.io/badge/version-1.0.21-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-green)
 ![WordPress](https://img.shields.io/badge/wordpress-5.0%2B-blue)
 ![PHP](https://img.shields.io/badge/php-7.4%2B-blue)
@@ -59,6 +59,13 @@ Clear, consistent navigation improves user experience and can support better eng
 - **Off-Canvas Device Overrides** — Optional per-device slide direction, animation, and panel size. Leave inherit/default to use the global Off-Canvas Menu settings.
 
 ## Changelog
+
+### 1.0.21
+
+- Separate main vs submenu spacing (top-level padding no longer leaks into dropdowns)
+- Inline submenu toggle after the parent label, toggle hover background, and Dropdown Align
+- Continuous submenu panel background for Panel Padding
+- Plugin Check escaping and core-filter phpcs note
 
 ### 1.0.20
 

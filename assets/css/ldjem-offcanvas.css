@@ -440,6 +440,9 @@ html.hb-a11y-dark .ldjem-offcanvas-logo-dual.ldjem-logo-dark-mode-accessibility 
   background-color: var(--ldjem-offcanvas-submenu-bg, transparent);
   transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
   opacity: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ldjem-submenu-item-gap, 0px);
 }
 
 .ldjem-offcanvas-menu-item.is-expanded > .ldjem-offcanvas-submenu,
